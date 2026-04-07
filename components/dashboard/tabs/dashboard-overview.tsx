@@ -41,8 +41,10 @@ export function DashboardOverview({ onNavigate }: DashboardOverviewProps) {
     )
   }
 
-  const summary = financialSummary?.summary
-  const analytics = summary?.analytics
+  // const summary = financialSummary?.summary
+  // const analytics = summary?.analytics
+  const summary = financialSummary?.summary as any
+const analytics = summary?.analytics
 
   return (
     <div className="space-y-6">

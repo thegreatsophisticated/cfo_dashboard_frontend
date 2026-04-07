@@ -362,7 +362,8 @@ function TransactionsTab({ companyId }: { companyId: number }) {
     )
   }
 
-  const transactions = transactionsData?.transactions || []
+  // const transactions = transactionsData?.transactions || []
+  const transactions = transactionsData || []
 
   if (transactions.length === 0) {
     return (
@@ -631,7 +632,17 @@ function IncomeStatementTab({ companyId }: { companyId: number }) {
     )
   }
 
-  const incomeStatement = data?.incomeStatement
+  // const incomeStatement = data?.incomeStatement
+  const incomeStatement = data ? {
+  companyName: data.companies?.[0]?.companyName ?? "",
+  period: data.summary?.period,
+  revenue: { total: data.summary?.totalRevenue, breakdown: [] },
+  costOfSales: { total: data.summary?.totalCostOfSales, breakdown: [] },
+  grossProfit: data.summary?.totalGrossProfit,
+  operatingExpenses: { total: data.summary?.totalOperatingExpenses, breakdown: [] },
+  netProfit: data.summary?.totalNetProfit,
+  profitMargin: data.summary?.averageProfitMargin,
+} : null
 
   if (!incomeStatement) {
     return (
@@ -767,7 +778,16 @@ function BalanceSheetTab({ companyId }: { companyId: number }) {
     )
   }
 
-  const balanceSheet = data?.balanceSheet
+  // const balanceSheet = data?.balanceSheet
+  const balanceSheet = data ? {
+  companyName: data.companies?.[0]?.companyName ?? "",
+  asOfDate: data.summary?.asOfDate,
+  assets: { total: data.summary?.totalAssets, breakdown: [] },
+  liabilities: { total: data.summary?.totalLiabilities, breakdown: [] },
+  equity: { total: data.summary?.totalEquity, capitalContributed: 0, retainedEarnings: data.companies?.[0]?.retainedEarnings ?? 0, breakdown: [] },
+  totalLiabilitiesAndEquity: data.summary?.totalAssets,
+  balanceCheck: data.summary?.balanceCheck,
+} : null
 
   if (!balanceSheet) {
     return (

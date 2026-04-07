@@ -260,12 +260,41 @@ export interface GlobalCashBook {
   };
 }
 
+// export interface GlobalFinancialSummary {
+//   status: number;
+//   message: string;
+//   year: number;
+//   summary: {
+//     totalCompanies: number;
+//     totalRevenue: number;
+//     totalExpenses: number;
+//     totalNetProfit: number;
+//     averageProfitMargin: string;
+//     totalAssets: number;
+//     totalLiabilities: number;
+//     totalEquity: number;
+//   };
+//   companies: Array<{
+//     companyId: number;
+//     companyName: string;
+//     revenue: number;
+//     expenses: number;
+//     netProfit: number;
+//     profitMargin: string;
+//     assets: number;
+//     liabilities: number;
+//     equity: number;
+//   }>;
+// }
 export interface GlobalFinancialSummary {
   status: number;
   message: string;
   year: number;
+  totalTransactions: number;
   summary: {
     totalCompanies: number;
+    totalTransactions: number;
+    // Flat fields (original)
     totalRevenue: number;
     totalExpenses: number;
     totalNetProfit: number;
@@ -273,6 +302,60 @@ export interface GlobalFinancialSummary {
     totalAssets: number;
     totalLiabilities: number;
     totalEquity: number;
+    // Nested fields (used by dashboard-overview)
+    netProfit: number;
+    revenue: {
+      total: number;
+      averagePerCompany: number;
+      breakdown: Array<{ category: string; amount: number; count: number }>;
+    };
+    expenses: {
+      total: number;
+      averagePerCompany: number;
+      breakdown: Array<{ category: string; amount: number; count: number }>;
+    };
+    analytics: {
+      financialRatios: {
+        profitMargin: string;
+        grossProfitMargin: string;
+        debtToAssetRatio: string;
+        currentRatio: string;
+      };
+      cashFlowAnalysis: {
+        netCashFlow: number;
+        cashInTransactions: number;
+        cashOutTransactions: number;
+      };
+      monthlyTrends: Array<{
+        month: number;
+        revenue: number;
+        expenses: number;
+        netIncome: number;
+      }>;
+      companyPerformance: Array<{
+        companyId: number;
+        companyName: string;
+        transactionCount: number;
+        totalVolume: number;
+        netIncome: number;
+      }>;
+      counterpartyAnalysis: Array<{
+        name: string;
+        transactionCount: number;
+        totalAmount: number;
+        revenue: number;
+        expenses: number;
+      }>;
+      taxAnalysis: {
+        totalTaxCollected: number;
+        averageTaxRate: string;
+        taxByCategory: Array<{
+          category: string;
+          totalTax: number;
+          averageTaxRate: string;
+        }>;
+      };
+    };
   };
   companies: Array<{
     companyId: number;
@@ -1383,9 +1466,13 @@ export async function getNextCategoryCode(
 // USER MANAGEMENT API FUNCTIONS
 // =====================================================
 
-export async function fetchUsers(filters: any): Promise<User[]> {
+// export async function fetchUsers(filters: any): Promise<User[]> {
+//   console.log(filters);
+//   return apiCall<User[]>("users");
+// }
+export async function fetchUsers(filters: any): Promise<{ data: User[]; meta: { total: number; page: number; limit: number; totalPages: number } }> {
   console.log(filters);
-  return apiCall<User[]>("users");
+  return apiCall<{ data: User[]; meta: { total: number; page: number; limit: number; totalPages: number } }>(`users?page=${filters.page}&limit=${filters.limit}&name=${filters.name}`);
 }
 
 export async function createUser(data: {
@@ -1400,15 +1487,16 @@ export async function createUser(data: {
   });
 }
 
-export async function updateUser(id: string, data: any): Promise<User> {
+export async function updateUser(id: number, data: any): Promise<User> {
   return apiCall<User>(`users/${id}`, {
     method: "PATCH",
     body: JSON.stringify(data),
   });
 }
 
-export async function deleteUser(id: string): Promise<void> {
+export async function deleteUser(id: number): Promise<void> {
   await apiCall<void>(`users/${id}`, {
+
     method: "DELETE",
   });
 }
