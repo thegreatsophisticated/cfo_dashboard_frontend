@@ -4,7 +4,7 @@
 /node_modules
 
 # next.js
-/.next/
+# /.next/    <-- commented out so .next gets pushed to GitHub
 /out/
 
 # production

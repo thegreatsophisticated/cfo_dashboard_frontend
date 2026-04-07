@@ -117,7 +117,7 @@ export function DashboardLayout() {
       case "dashboard":
         return <DashboardOverview onNavigate={setActiveTab} />;
       case "companies":
-        return <CompaniesPage onNavigate={setActiveTab} />;
+       return <CompaniesPage />;
       case "consolidated-income":
         return <ConsolidatedIncome />;
       case "consolidated-balance":

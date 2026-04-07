@@ -265,16 +265,18 @@ function TransactionsTab({ companyId }: { companyId: number }) {
         setLoading(true)
         setError(null)
         const response = await fetchCompanyTransactions(companyId)
-       let transactions=response.transactions
+      //  let transactions=response.transactions
+      const transactions = Array.isArray(response) ? response : []
         console.log("fetchCompanyTransactions", response)
         // Handle the API response structure
-        if (transactions && Array.isArray(transactions)) {
-          setTransactions(transactions)
-        } else if (Array.isArray(response)) {
-          setTransactions(response)
-        } else {
-          setTransactions([])
-        }
+        setTransactions(transactions)
+        // if (transactions && Array.isArray(transactions)) {
+        //   setTransactions(transactions)
+        // } else if (Array.isArray(response)) {
+        //   setTransactions(response)
+        // } else {
+        //   setTransactions([])
+        // }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load transactions")
       } finally {
