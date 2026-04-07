@@ -2197,7 +2197,8 @@ function TransactionsTab({ companyId }) {
             columnNumber: 7
         }, this);
     }
-    const transactions = transactionsData?.transactions || [];
+    // const transactions = transactionsData?.transactions || []
+    const transactions = transactionsData || [];
     if (transactions.length === 0) {
         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
             className: "flex flex-col items-center justify-center h-[500px] text-center",
@@ -2206,7 +2207,7 @@ function TransactionsTab({ companyId }) {
                     className: "h-12 w-12 text-muted-foreground/50 mb-3"
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 370,
+                    lineNumber: 371,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2214,7 +2215,7 @@ function TransactionsTab({ companyId }) {
                     children: "No Transactions Found"
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 371,
+                    lineNumber: 372,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2222,13 +2223,13 @@ function TransactionsTab({ companyId }) {
                     children: "This company has no transaction history yet."
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 372,
+                    lineNumber: 373,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-            lineNumber: 369,
+            lineNumber: 370,
             columnNumber: 7
         }, this);
     }
@@ -2339,7 +2340,7 @@ function TransactionsTab({ companyId }) {
                                     children: "Total Transactions"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 445,
+                                    lineNumber: 446,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2347,13 +2348,13 @@ function TransactionsTab({ companyId }) {
                                     children: transactions.length
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 446,
+                                    lineNumber: 447,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 444,
+                            lineNumber: 445,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2364,7 +2365,7 @@ function TransactionsTab({ companyId }) {
                                     children: "Revenue"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 451,
+                                    lineNumber: 452,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2372,13 +2373,13 @@ function TransactionsTab({ companyId }) {
                                     children: revenueCount
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 452,
+                                    lineNumber: 453,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 450,
+                            lineNumber: 451,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2389,7 +2390,7 @@ function TransactionsTab({ companyId }) {
                                     children: "Expenses"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 459,
+                                    lineNumber: 460,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2397,13 +2398,13 @@ function TransactionsTab({ companyId }) {
                                     children: expenseCount
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 460,
+                                    lineNumber: 461,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 458,
+                            lineNumber: 459,
                             columnNumber: 11
                         }, this),
                         assetCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2414,7 +2415,7 @@ function TransactionsTab({ companyId }) {
                                     children: "Assets"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 468,
+                                    lineNumber: 469,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2422,13 +2423,13 @@ function TransactionsTab({ companyId }) {
                                     children: assetCount
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 469,
+                                    lineNumber: 470,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 467,
+                            lineNumber: 468,
                             columnNumber: 13
                         }, this),
                         liabilityCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2439,7 +2440,7 @@ function TransactionsTab({ companyId }) {
                                     children: "Liabilities"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 478,
+                                    lineNumber: 479,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2447,13 +2448,13 @@ function TransactionsTab({ companyId }) {
                                     children: liabilityCount
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 479,
+                                    lineNumber: 480,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 477,
+                            lineNumber: 478,
                             columnNumber: 13
                         }, this),
                         equityCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2464,7 +2465,7 @@ function TransactionsTab({ companyId }) {
                                     children: "Equity"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 488,
+                                    lineNumber: 489,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2472,19 +2473,19 @@ function TransactionsTab({ companyId }) {
                                     children: equityCount
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 489,
+                                    lineNumber: 490,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 487,
+                            lineNumber: 488,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 442,
+                    lineNumber: 443,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2500,7 +2501,7 @@ function TransactionsTab({ companyId }) {
                                             children: "Date"
                                         }, void 0, false, {
                                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                            lineNumber: 501,
+                                            lineNumber: 502,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableHead"], {
@@ -2508,7 +2509,7 @@ function TransactionsTab({ companyId }) {
                                             children: "Description"
                                         }, void 0, false, {
                                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                            lineNumber: 502,
+                                            lineNumber: 503,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableHead"], {
@@ -2516,7 +2517,7 @@ function TransactionsTab({ companyId }) {
                                             children: "Category"
                                         }, void 0, false, {
                                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                            lineNumber: 503,
+                                            lineNumber: 504,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableHead"], {
@@ -2524,7 +2525,7 @@ function TransactionsTab({ companyId }) {
                                             children: "Type"
                                         }, void 0, false, {
                                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                            lineNumber: 504,
+                                            lineNumber: 505,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableHead"], {
@@ -2532,7 +2533,7 @@ function TransactionsTab({ companyId }) {
                                             children: "Flow"
                                         }, void 0, false, {
                                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                            lineNumber: 505,
+                                            lineNumber: 506,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableHead"], {
@@ -2540,7 +2541,7 @@ function TransactionsTab({ companyId }) {
                                             children: "Amount"
                                         }, void 0, false, {
                                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                            lineNumber: 506,
+                                            lineNumber: 507,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableHead"], {
@@ -2548,18 +2549,18 @@ function TransactionsTab({ companyId }) {
                                             children: "Status"
                                         }, void 0, false, {
                                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                            lineNumber: 507,
+                                            lineNumber: 508,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 500,
+                                    lineNumber: 501,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                lineNumber: 499,
+                                lineNumber: 500,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableBody"], {
@@ -2573,7 +2574,7 @@ function TransactionsTab({ companyId }) {
                                                 children: formatDate(transaction.date || transaction.transactionDate)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                lineNumber: 516,
+                                                lineNumber: 517,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableCell"], {
@@ -2584,7 +2585,7 @@ function TransactionsTab({ companyId }) {
                                                         children: transaction.description
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                        lineNumber: 520,
+                                                        lineNumber: 521,
                                                         columnNumber: 23
                                                     }, this),
                                                     transaction.referenceNumber && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2592,13 +2593,13 @@ function TransactionsTab({ companyId }) {
                                                         children: transaction.referenceNumber
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                        lineNumber: 522,
+                                                        lineNumber: 523,
                                                         columnNumber: 25
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                lineNumber: 519,
+                                                lineNumber: 520,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableCell"], {
@@ -2608,12 +2609,12 @@ function TransactionsTab({ companyId }) {
                                                     children: transaction.categoryPath || transaction.category?.name || "N/A"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                    lineNumber: 528,
+                                                    lineNumber: 529,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                lineNumber: 527,
+                                                lineNumber: 528,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableCell"], {
@@ -2624,12 +2625,12 @@ function TransactionsTab({ companyId }) {
                                                     children: getCategoryLabel(transaction.category?.categoryType)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                    lineNumber: 535,
+                                                    lineNumber: 536,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                lineNumber: 534,
+                                                lineNumber: 535,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableCell"], {
@@ -2644,30 +2645,30 @@ function TransactionsTab({ companyId }) {
                                                                 className: "h-2.5 w-2.5"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                                lineNumber: 563,
+                                                                lineNumber: 564,
                                                                 columnNumber: 29
                                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$down$2d$right$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowDownRight$3e$__["ArrowDownRight"], {
                                                                 className: "h-2.5 w-2.5"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                                lineNumber: 565,
+                                                                lineNumber: 566,
                                                                 columnNumber: 29
                                                             }, this),
                                                             transaction.transactionType === "debit" ? "In" : "Out"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                        lineNumber: 561,
+                                                        lineNumber: 562,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                    lineNumber: 552,
+                                                    lineNumber: 553,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                lineNumber: 551,
+                                                lineNumber: 552,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableCell"], {
@@ -2678,7 +2679,7 @@ function TransactionsTab({ companyId }) {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                lineNumber: 573,
+                                                lineNumber: 574,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableCell"], {
@@ -2689,46 +2690,46 @@ function TransactionsTab({ companyId }) {
                                                     children: transaction.status || "completed"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                    lineNumber: 582,
+                                                    lineNumber: 583,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                lineNumber: 581,
+                                                lineNumber: 582,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, transaction.id, true, {
                                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                        lineNumber: 515,
+                                        lineNumber: 516,
                                         columnNumber: 19
                                     }, this);
                                 })
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                lineNumber: 510,
+                                lineNumber: 511,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                        lineNumber: 498,
+                        lineNumber: 499,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 497,
+                    lineNumber: 498,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-            lineNumber: 440,
+            lineNumber: 441,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-        lineNumber: 439,
+        lineNumber: 440,
         columnNumber: 5
     }, this);
 }
@@ -2750,12 +2751,12 @@ function IncomeStatementTab({ companyId }) {
                 className: "h-6 w-6 animate-spin text-muted-foreground"
             }, void 0, false, {
                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                lineNumber: 617,
+                lineNumber: 618,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-            lineNumber: 616,
+            lineNumber: 617,
             columnNumber: 7
         }, this);
     }
@@ -2767,7 +2768,7 @@ function IncomeStatementTab({ companyId }) {
                     className: "h-12 w-12 text-destructive/50 mb-3"
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 625,
+                    lineNumber: 626,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2775,7 +2776,7 @@ function IncomeStatementTab({ companyId }) {
                     children: "Error Loading Income Statement"
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 626,
+                    lineNumber: 627,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2783,17 +2784,36 @@ function IncomeStatementTab({ companyId }) {
                     children: error instanceof Error ? error.message : "Please try again later"
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 627,
+                    lineNumber: 628,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-            lineNumber: 624,
+            lineNumber: 625,
             columnNumber: 7
         }, this);
     }
-    const incomeStatement = data?.incomeStatement;
+    // const incomeStatement = data?.incomeStatement
+    const incomeStatement = data ? {
+        companyName: data.companies?.[0]?.companyName ?? "",
+        period: data.summary?.period,
+        revenue: {
+            total: data.summary?.totalRevenue,
+            breakdown: []
+        },
+        costOfSales: {
+            total: data.summary?.totalCostOfSales,
+            breakdown: []
+        },
+        grossProfit: data.summary?.totalGrossProfit,
+        operatingExpenses: {
+            total: data.summary?.totalOperatingExpenses,
+            breakdown: []
+        },
+        netProfit: data.summary?.totalNetProfit,
+        profitMargin: data.summary?.averageProfitMargin
+    } : null;
     if (!incomeStatement) {
         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
             className: "flex flex-col items-center justify-center h-[500px] text-center",
@@ -2802,7 +2822,7 @@ function IncomeStatementTab({ companyId }) {
                     className: "h-12 w-12 text-muted-foreground/50 mb-3"
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 639,
+                    lineNumber: 650,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2810,7 +2830,7 @@ function IncomeStatementTab({ companyId }) {
                     children: "No Data Available"
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 640,
+                    lineNumber: 651,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2821,13 +2841,13 @@ function IncomeStatementTab({ companyId }) {
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 641,
+                    lineNumber: 652,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-            lineNumber: 638,
+            lineNumber: 649,
             columnNumber: 7
         }, this);
     }
@@ -2847,7 +2867,7 @@ function IncomeStatementTab({ companyId }) {
                                     children: incomeStatement.companyName
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 654,
+                                    lineNumber: 665,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -2855,7 +2875,7 @@ function IncomeStatementTab({ companyId }) {
                                     children: "Income Statement"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 655,
+                                    lineNumber: 666,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2866,13 +2886,13 @@ function IncomeStatementTab({ companyId }) {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 656,
+                                    lineNumber: 667,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 653,
+                            lineNumber: 664,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2888,7 +2908,7 @@ function IncomeStatementTab({ companyId }) {
                                         children: "← Prev"
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                        lineNumber: 664,
+                                        lineNumber: 675,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2896,7 +2916,7 @@ function IncomeStatementTab({ companyId }) {
                                         children: year
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                        lineNumber: 672,
+                                        lineNumber: 683,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -2908,24 +2928,24 @@ function IncomeStatementTab({ companyId }) {
                                         children: "Next →"
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                        lineNumber: 675,
+                                        lineNumber: 686,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                lineNumber: 663,
+                                lineNumber: 674,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 662,
+                            lineNumber: 673,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 652,
+                    lineNumber: 663,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(StatementSection, {
@@ -2937,12 +2957,12 @@ function IncomeStatementTab({ companyId }) {
                         className: "h-3 w-3"
                     }, void 0, false, {
                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                        lineNumber: 694,
+                        lineNumber: 705,
                         columnNumber: 17
                     }, void 0)
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 689,
+                    lineNumber: 700,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(StatementSection, {
@@ -2952,7 +2972,7 @@ function IncomeStatementTab({ companyId }) {
                     colorClass: "orange"
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 698,
+                    lineNumber: 709,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2965,7 +2985,7 @@ function IncomeStatementTab({ companyId }) {
                                 children: "GROSS PROFIT"
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                lineNumber: 708,
+                                lineNumber: 719,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2973,18 +2993,18 @@ function IncomeStatementTab({ companyId }) {
                                 children: formatCurrency(incomeStatement.grossProfit)
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                lineNumber: 709,
+                                lineNumber: 720,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                        lineNumber: 707,
+                        lineNumber: 718,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 706,
+                    lineNumber: 717,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(StatementSection, {
@@ -2994,7 +3014,7 @@ function IncomeStatementTab({ companyId }) {
                     colorClass: "red"
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 716,
+                    lineNumber: 727,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3008,7 +3028,7 @@ function IncomeStatementTab({ companyId }) {
                                     children: "NET PROFIT"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 726,
+                                    lineNumber: 737,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3016,13 +3036,13 @@ function IncomeStatementTab({ companyId }) {
                                     children: formatCurrency(incomeStatement.netProfit)
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 727,
+                                    lineNumber: 738,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 725,
+                            lineNumber: 736,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3033,7 +3053,7 @@ function IncomeStatementTab({ companyId }) {
                                     children: "Profit Margin"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 732,
+                                    lineNumber: 743,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3041,30 +3061,30 @@ function IncomeStatementTab({ companyId }) {
                                     children: incomeStatement.profitMargin
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 733,
+                                    lineNumber: 744,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 731,
+                            lineNumber: 742,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 724,
+                    lineNumber: 735,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-            lineNumber: 650,
+            lineNumber: 661,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-        lineNumber: 649,
+        lineNumber: 660,
         columnNumber: 5
     }, this);
 }
@@ -3086,12 +3106,12 @@ function BalanceSheetTab({ companyId }) {
                 className: "h-6 w-6 animate-spin text-muted-foreground"
             }, void 0, false, {
                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                lineNumber: 753,
+                lineNumber: 764,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-            lineNumber: 752,
+            lineNumber: 763,
             columnNumber: 7
         }, this);
     }
@@ -3103,7 +3123,7 @@ function BalanceSheetTab({ companyId }) {
                     className: "h-12 w-12 text-destructive/50 mb-3"
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 761,
+                    lineNumber: 772,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3111,7 +3131,7 @@ function BalanceSheetTab({ companyId }) {
                     children: "Error Loading Balance Sheet"
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 762,
+                    lineNumber: 773,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3119,17 +3139,37 @@ function BalanceSheetTab({ companyId }) {
                     children: error instanceof Error ? error.message : "Please try again later"
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 763,
+                    lineNumber: 774,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-            lineNumber: 760,
+            lineNumber: 771,
             columnNumber: 7
         }, this);
     }
-    const balanceSheet = data?.balanceSheet;
+    // const balanceSheet = data?.balanceSheet
+    const balanceSheet = data ? {
+        companyName: data.companies?.[0]?.companyName ?? "",
+        asOfDate: data.summary?.asOfDate,
+        assets: {
+            total: data.summary?.totalAssets,
+            breakdown: []
+        },
+        liabilities: {
+            total: data.summary?.totalLiabilities,
+            breakdown: []
+        },
+        equity: {
+            total: data.summary?.totalEquity,
+            capitalContributed: 0,
+            retainedEarnings: data.companies?.[0]?.retainedEarnings ?? 0,
+            breakdown: []
+        },
+        totalLiabilitiesAndEquity: data.summary?.totalAssets,
+        balanceCheck: data.summary?.balanceCheck
+    } : null;
     if (!balanceSheet) {
         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
             className: "flex flex-col items-center justify-center h-[500px] text-center",
@@ -3138,7 +3178,7 @@ function BalanceSheetTab({ companyId }) {
                     className: "h-12 w-12 text-muted-foreground/50 mb-3"
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 775,
+                    lineNumber: 795,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3146,7 +3186,7 @@ function BalanceSheetTab({ companyId }) {
                     children: "No Data Available"
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 776,
+                    lineNumber: 796,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3157,13 +3197,13 @@ function BalanceSheetTab({ companyId }) {
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 777,
+                    lineNumber: 797,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-            lineNumber: 774,
+            lineNumber: 794,
             columnNumber: 7
         }, this);
     }
@@ -3183,7 +3223,7 @@ function BalanceSheetTab({ companyId }) {
                                     children: balanceSheet.companyName
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 790,
+                                    lineNumber: 810,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -3191,7 +3231,7 @@ function BalanceSheetTab({ companyId }) {
                                     children: "Balance Sheet"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 791,
+                                    lineNumber: 811,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3202,13 +3242,13 @@ function BalanceSheetTab({ companyId }) {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 792,
+                                    lineNumber: 812,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 789,
+                            lineNumber: 809,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3221,18 +3261,18 @@ function BalanceSheetTab({ companyId }) {
                                 className: "px-3 py-1 text-xs border rounded-md bg-background"
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                lineNumber: 799,
+                                lineNumber: 819,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 798,
+                            lineNumber: 818,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 788,
+                    lineNumber: 808,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(StatementSection, {
@@ -3244,13 +3284,13 @@ function BalanceSheetTab({ companyId }) {
                         className: "h-3 w-3"
                     }, void 0, false, {
                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                        lineNumber: 815,
+                        lineNumber: 835,
                         columnNumber: 17
                     }, void 0),
                     showTransactionCount: true
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 810,
+                    lineNumber: 830,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(StatementSection, {
@@ -3262,13 +3302,13 @@ function BalanceSheetTab({ companyId }) {
                         className: "h-3 w-3"
                     }, void 0, false, {
                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                        lineNumber: 825,
+                        lineNumber: 845,
                         columnNumber: 17
                     }, void 0),
                     showTransactionCount: true
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 820,
+                    lineNumber: 840,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3283,14 +3323,14 @@ function BalanceSheetTab({ companyId }) {
                                         className: "h-3 w-3"
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                        lineNumber: 833,
+                                        lineNumber: 853,
                                         columnNumber: 15
                                     }, this),
                                     "EQUITY"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                lineNumber: 832,
+                                lineNumber: 852,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3303,7 +3343,7 @@ function BalanceSheetTab({ companyId }) {
                                                 children: "Capital Contributed"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                lineNumber: 838,
+                                                lineNumber: 858,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3311,13 +3351,13 @@ function BalanceSheetTab({ companyId }) {
                                                 children: formatCurrency(balanceSheet.equity.capitalContributed)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                lineNumber: 839,
+                                                lineNumber: 859,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                        lineNumber: 837,
+                                        lineNumber: 857,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3327,7 +3367,7 @@ function BalanceSheetTab({ companyId }) {
                                                 children: "Retained Earnings"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                lineNumber: 844,
+                                                lineNumber: 864,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3335,13 +3375,13 @@ function BalanceSheetTab({ companyId }) {
                                                 children: formatCurrency(balanceSheet.equity.retainedEarnings)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                lineNumber: 845,
+                                                lineNumber: 865,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                        lineNumber: 843,
+                                        lineNumber: 863,
                                         columnNumber: 15
                                     }, this),
                                     balanceSheet.equity.breakdown?.map((item, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3354,7 +3394,7 @@ function BalanceSheetTab({ companyId }) {
                                                             children: item.categoryName || item.name
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                            lineNumber: 853,
+                                                            lineNumber: 873,
                                                             columnNumber: 21
                                                         }, this),
                                                         item.transactionCount && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3366,13 +3406,13 @@ function BalanceSheetTab({ companyId }) {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                            lineNumber: 855,
+                                                            lineNumber: 875,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                    lineNumber: 852,
+                                                    lineNumber: 872,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3380,13 +3420,13 @@ function BalanceSheetTab({ companyId }) {
                                                     children: formatCurrency(item.totalAmount || item.amount)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                    lineNumber: 860,
+                                                    lineNumber: 880,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, idx, true, {
                                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                            lineNumber: 851,
+                                            lineNumber: 871,
                                             columnNumber: 17
                                         }, this)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3396,7 +3436,7 @@ function BalanceSheetTab({ companyId }) {
                                                 children: "Total Equity"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                lineNumber: 867,
+                                                lineNumber: 887,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3404,30 +3444,30 @@ function BalanceSheetTab({ companyId }) {
                                                 children: formatCurrency(balanceSheet.equity.total)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                lineNumber: 868,
+                                                lineNumber: 888,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                        lineNumber: 866,
+                                        lineNumber: 886,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                lineNumber: 836,
+                                lineNumber: 856,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                        lineNumber: 831,
+                        lineNumber: 851,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 830,
+                    lineNumber: 850,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3440,7 +3480,7 @@ function BalanceSheetTab({ companyId }) {
                                 children: "TOTAL LIABILITIES & EQUITY"
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                lineNumber: 879,
+                                lineNumber: 899,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3448,18 +3488,18 @@ function BalanceSheetTab({ companyId }) {
                                 children: formatCurrency(balanceSheet.totalLiabilitiesAndEquity)
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                lineNumber: 880,
+                                lineNumber: 900,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                        lineNumber: 878,
+                        lineNumber: 898,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 877,
+                    lineNumber: 897,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3473,7 +3513,7 @@ function BalanceSheetTab({ companyId }) {
                                     children: "BALANCE CHECK"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 894,
+                                    lineNumber: 914,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3481,13 +3521,13 @@ function BalanceSheetTab({ companyId }) {
                                     children: balanceSheet.balanceCheck
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 895,
+                                    lineNumber: 915,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 893,
+                            lineNumber: 913,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3495,24 +3535,24 @@ function BalanceSheetTab({ companyId }) {
                             children: "Assets = Liabilities + Equity"
                         }, void 0, false, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 904,
+                            lineNumber: 924,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 887,
+                    lineNumber: 907,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-            lineNumber: 786,
+            lineNumber: 806,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-        lineNumber: 785,
+        lineNumber: 805,
         columnNumber: 5
     }, this);
 }
@@ -3566,7 +3606,7 @@ function StatementSection({ title, items, total, colorClass, icon, showTransacti
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 969,
+                    lineNumber: 989,
                     columnNumber: 9
                 }, this),
                 items && items.length > 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3583,7 +3623,7 @@ function StatementSection({ title, items, total, colorClass, icon, showTransacti
                                                 children: item.categoryName || item.name
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                lineNumber: 981,
+                                                lineNumber: 1001,
                                                 columnNumber: 19
                                             }, this),
                                             showTransactionCount && item.transactionCount && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3597,13 +3637,13 @@ function StatementSection({ title, items, total, colorClass, icon, showTransacti
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                                lineNumber: 983,
+                                                lineNumber: 1003,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                        lineNumber: 980,
+                                        lineNumber: 1000,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3611,13 +3651,13 @@ function StatementSection({ title, items, total, colorClass, icon, showTransacti
                                         children: formatCurrency(item.totalAmount || item.amount)
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                        lineNumber: 988,
+                                        lineNumber: 1008,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, idx, true, {
                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                lineNumber: 976,
+                                lineNumber: 996,
                                 columnNumber: 15
                             }, this)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3630,7 +3670,7 @@ function StatementSection({ title, items, total, colorClass, icon, showTransacti
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 998,
+                                    lineNumber: 1018,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3638,19 +3678,19 @@ function StatementSection({ title, items, total, colorClass, icon, showTransacti
                                     children: formatCurrency(total)
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 999,
+                                    lineNumber: 1019,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 993,
+                            lineNumber: 1013,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 974,
+                    lineNumber: 994,
                     columnNumber: 11
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["cn"])("flex justify-between items-center p-2.5 rounded font-bold text-xs", colors.totalBg),
@@ -3662,7 +3702,7 @@ function StatementSection({ title, items, total, colorClass, icon, showTransacti
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 1009,
+                            lineNumber: 1029,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3670,24 +3710,24 @@ function StatementSection({ title, items, total, colorClass, icon, showTransacti
                             children: formatCurrency(total)
                         }, void 0, false, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 1010,
+                            lineNumber: 1030,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 1005,
+                    lineNumber: 1025,
                     columnNumber: 11
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-            lineNumber: 968,
+            lineNumber: 988,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-        lineNumber: 967,
+        lineNumber: 987,
         columnNumber: 5
     }, this);
 }
@@ -3710,12 +3750,12 @@ function CompanyDetailsModal({ company, open, onOpenChange, onEdit, onDelete }) 
                                     className: "h-4 w-4 text-primary"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 1036,
+                                    lineNumber: 1056,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                lineNumber: 1035,
+                                lineNumber: 1055,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3726,18 +3766,18 @@ function CompanyDetailsModal({ company, open, onOpenChange, onEdit, onDelete }) 
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                lineNumber: 1038,
+                                lineNumber: 1058,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                        lineNumber: 1034,
+                        lineNumber: 1054,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 1033,
+                    lineNumber: 1053,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Tabs"], {
@@ -3755,14 +3795,14 @@ function CompanyDetailsModal({ company, open, onOpenChange, onEdit, onDelete }) 
                                             className: "h-3 w-3 mr-1"
                                         }, void 0, false, {
                                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                            lineNumber: 1045,
+                                            lineNumber: 1065,
                                             columnNumber: 15
                                         }, this),
                                         "Overview"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 1044,
+                                    lineNumber: 1064,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TabsTrigger"], {
@@ -3773,14 +3813,14 @@ function CompanyDetailsModal({ company, open, onOpenChange, onEdit, onDelete }) 
                                             className: "h-3 w-3 mr-1"
                                         }, void 0, false, {
                                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                            lineNumber: 1049,
+                                            lineNumber: 1069,
                                             columnNumber: 15
                                         }, this),
                                         "Transactions"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 1048,
+                                    lineNumber: 1068,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TabsTrigger"], {
@@ -3791,14 +3831,14 @@ function CompanyDetailsModal({ company, open, onOpenChange, onEdit, onDelete }) 
                                             className: "h-3 w-3 mr-1"
                                         }, void 0, false, {
                                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                            lineNumber: 1053,
+                                            lineNumber: 1073,
                                             columnNumber: 15
                                         }, this),
                                         "Income"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 1052,
+                                    lineNumber: 1072,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TabsTrigger"], {
@@ -3809,20 +3849,20 @@ function CompanyDetailsModal({ company, open, onOpenChange, onEdit, onDelete }) 
                                             className: "h-3 w-3 mr-1"
                                         }, void 0, false, {
                                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                            lineNumber: 1057,
+                                            lineNumber: 1077,
                                             columnNumber: 15
                                         }, this),
                                         "Balance"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 1056,
+                                    lineNumber: 1076,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 1043,
+                            lineNumber: 1063,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TabsContent"], {
@@ -3832,12 +3872,12 @@ function CompanyDetailsModal({ company, open, onOpenChange, onEdit, onDelete }) 
                                 company: company
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                lineNumber: 1063,
+                                lineNumber: 1083,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 1062,
+                            lineNumber: 1082,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TabsContent"], {
@@ -3847,12 +3887,12 @@ function CompanyDetailsModal({ company, open, onOpenChange, onEdit, onDelete }) 
                                 companyId: company.id
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                lineNumber: 1067,
+                                lineNumber: 1087,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 1066,
+                            lineNumber: 1086,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TabsContent"], {
@@ -3862,12 +3902,12 @@ function CompanyDetailsModal({ company, open, onOpenChange, onEdit, onDelete }) 
                                 companyId: company.id
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                lineNumber: 1071,
+                                lineNumber: 1091,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 1070,
+                            lineNumber: 1090,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TabsContent"], {
@@ -3877,18 +3917,18 @@ function CompanyDetailsModal({ company, open, onOpenChange, onEdit, onDelete }) 
                                 companyId: company.id
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                lineNumber: 1075,
+                                lineNumber: 1095,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 1074,
+                            lineNumber: 1094,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 1042,
+                    lineNumber: 1062,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DialogFooter"], {
@@ -3904,14 +3944,14 @@ function CompanyDetailsModal({ company, open, onOpenChange, onEdit, onDelete }) 
                                     className: "mr-1 h-3 w-3"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 1086,
+                                    lineNumber: 1106,
                                     columnNumber: 13
                                 }, this),
                                 "Delete"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 1080,
+                            lineNumber: 1100,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -3923,31 +3963,31 @@ function CompanyDetailsModal({ company, open, onOpenChange, onEdit, onDelete }) 
                                     className: "mr-1 h-3 w-3"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                                    lineNumber: 1090,
+                                    lineNumber: 1110,
                                     columnNumber: 13
                                 }, this),
                                 "Edit Company"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                            lineNumber: 1089,
+                            lineNumber: 1109,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-                    lineNumber: 1079,
+                    lineNumber: 1099,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-            lineNumber: 1032,
+            lineNumber: 1052,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/components/dashboard/tabs/companies/company-details-modal.tsx",
-        lineNumber: 1031,
+        lineNumber: 1051,
         columnNumber: 5
     }, this);
 }

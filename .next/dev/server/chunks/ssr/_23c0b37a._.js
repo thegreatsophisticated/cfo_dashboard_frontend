@@ -1012,7 +1012,7 @@ async function getNextCategoryCode(parentId) {
 }
 async function fetchUsers(filters) {
     console.log(filters);
-    return apiCall("users");
+    return apiCall(`users?page=${filters.page}&limit=${filters.limit}&name=${filters.name}`);
 }
 async function createUser(data) {
     return apiCall("users", {
