@@ -273,7 +273,7 @@ function LoginForm() {
                                         type: "submit",
                                         className: "w-full bg-primary hover:bg-primary/90",
                                         disabled: isLoading,
-                                        children: isLoading ? "Signing in..." : "Sign In"
+                                        children: isLoading ? "Signing in..." : "SignIn"
                                     }, void 0, false, {
                                         fileName: "[project]/components/login-form.tsx",
                                         lineNumber: 106,

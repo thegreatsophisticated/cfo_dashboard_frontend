@@ -108,7 +108,7 @@ export function LoginForm() {
                 className="w-full bg-primary hover:bg-primary/90"
                 disabled={isLoading}
               >
-                {isLoading ? "Signing in..." : "Sign In"}
+                {isLoading ? "Signing in..." : "SignIn"}
               </Button>
             </form>
           </CardContent>
