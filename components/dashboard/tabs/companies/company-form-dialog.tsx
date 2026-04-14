@@ -84,15 +84,24 @@ interface CompanyFormDialogProps {
 
 // Helper function to get current user from localStorage
 function getCurrentUserId(): number {
-  if (typeof window === 'undefined') return 1 // Default for SSR
+  if (typeof window === 'undefined') return 1
   
   try {
+
     const USER_STORAGE_KEY = "irebe_user"
+     const USER_STORAGE_Token = "irebe_tokens"
+
     const storedUser = localStorage.getItem(USER_STORAGE_KEY)
-    
+    const storedToken = localStorage.getItem(USER_STORAGE_Token)
+
+
+console.log("Retrieved user from localStorage:", storedUser)
+console.log("Retrieved token from localStorage:", storedToken)
+
     if (storedUser) {
+
       const parsedUser = JSON.parse(storedUser)
-      return parsedUser?.id || 1
+      return parsedUser?.id 
     }
   } catch (error) {
     console.error("Error reading user from localStorage:", error)
@@ -177,42 +186,50 @@ export function CompanyFormDialog({
     }
   }, [open, mode, company, form, currentUserId])
 
-  async function onSubmit(values: CompanyFormValues) {
-    setIsSubmitting(true)
-    try {
-      const url =
-        mode === "create"
-          ? `${API_BASE_URL}company/create`
-          : `${API_BASE_URL}company/${company?.id}`
+  
+ async function onSubmit(values: CompanyFormValues) {
+  setIsSubmitting(true)
+  try {
+    const url =
+      mode === "create"
+        ? `${API_BASE_URL}company/create`
+        : `${API_BASE_URL}company/${company?.id}`
 
-      const method = mode === "create" ? "POST" : "PATCH"
+    const method = mode === "create" ? "POST" : "PATCH"
 
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      })
+    // Get token from localStorage
+    const USER_STORAGE_Token = "irebe_tokens"
+const storedToken = localStorage.getItem(USER_STORAGE_Token)
+const token = storedToken !== null ? JSON.parse(storedToken) : null
+    console.log("Attempting to retrieve token from localStorage with key:", token?.accessToken)
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.message || `Failed to ${mode} company`)
-      }
+    const response = await fetch(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token?.accessToken}`
+      },
+      body: JSON.stringify(values),
+    })
 
-      toast.success(
-        mode === "create" ? "Company created successfully" : "Company updated successfully"
-      )
-
-      onSuccess()
-      onOpenChange(false)
-    } catch (error) {
-      console.error(`Error ${mode}ing company:`, error)
-      toast.error(error instanceof Error ? error.message : `Failed to ${mode} company`)
-    } finally {
-      setIsSubmitting(false)
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.message || `Failed to ${mode} company`)
     }
+
+    toast.success(
+      mode === "create" ? "Company created successfully" : "Company updated successfully"
+    )
+
+    onSuccess()
+    onOpenChange(false)
+  } catch (error) {
+    console.error(`Error ${mode}ing company:`, error)
+    toast.error(error instanceof Error ? error.message : `Failed to ${mode} company`)
+  } finally {
+    setIsSubmitting(false)
   }
+}
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
