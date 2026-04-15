@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { FileText, Loader2, Calendar, TrendingUp, TrendingDown } from "lucide-react"
-import { fetchGlobalCashBook, type GlobalCashBook } from "@/lib/api"
+import { fetchGlobalCashBook } from "@/lib/api"
 import {
   Popover,
   PopoverContent,
@@ -68,10 +68,43 @@ function StatementRow({
   )
 }
 
+// Types for the new API response format
+interface CompanyData {
+  companyId: number
+  companyName: string
+  totalCashIn: number
+  totalCashOut: number
+  netCashFlow: number
+  transactionCount: number
+}
+
+interface ApiResponse {
+  status: number
+  message: string
+  summary: {
+    period: {
+      startDate: string
+      endDate: string
+    }
+    totalCashIn: number
+    totalCashOut: number
+    netCashFlow: number
+  }
+  data: CompanyData[]
+  meta: {
+    total: number
+    page: number
+    limit: number
+    totalPages: number
+    hasNextPage: boolean
+    hasPreviousPage: boolean
+  }
+}
+
 export function GlobalCashBook() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [data, setData] = useState<any | null>(null)
+  const [data, setData] = useState<ApiResponse | null>(null)
   const [startDate, setStartDate] = useState<Date>(subDays(new Date(), 30))
   const [endDate, setEndDate] = useState<Date>(new Date())
   const [isStartCalendarOpen, setIsStartCalendarOpen] = useState(false)
@@ -84,8 +117,14 @@ export function GlobalCashBook() {
         setError(null)
         const startDateString = format(startDate, "yyyy-MM-dd")
         const endDateString = format(endDate, "yyyy-MM-dd")
-        const response = await fetchGlobalCashBook(startDateString, endDateString)
+        const response: ApiResponse = await fetchGlobalCashBook(startDateString, endDateString)
         console.log("Global Cash Book:", response)
+        
+        // Handle non-200 status
+        if (response.status !== 200) {
+          throw new Error(response.message || "Failed to fetch data")
+        }
+        
         setData(response)
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load cash book")
@@ -126,7 +165,7 @@ export function GlobalCashBook() {
     )
   }
 
-  if (!data || !data.summary || !data.companies) {
+  if (!data || !data.summary || !data.data || data.data.length === 0) {
     return (
       <Card>
         <CardContent className="flex items-center justify-center min-h-[400px]">
@@ -138,7 +177,7 @@ export function GlobalCashBook() {
     )
   }
 
-  const { summary, companies } = data
+  const { summary, data: companies, meta } = data
 
   return (
     <div className="space-y-4">
@@ -149,7 +188,7 @@ export function GlobalCashBook() {
             <div>
               <CardTitle className="text-lg font-semibold">Global Cash Book</CardTitle>
               <p className="text-xs text-muted-foreground mt-1">
-                {format(startDate, "dd MMM yyyy")} - {format(endDate, "dd MMM yyyy")} • {companies.length} {companies.length === 1 ? "Company" : "Companies"}
+                {format(new Date(summary.period.startDate), "dd MMM yyyy")} - {format(new Date(summary.period.endDate), "dd MMM yyyy")} • {meta.total} {meta.total === 1 ? "Company" : "Companies"}
               </p>
             </div>
             <div className="flex gap-2">
@@ -272,14 +311,14 @@ export function GlobalCashBook() {
               </TableHeader>
               <TableBody>
                 {companies
-                  .sort((a: any, b: any) => Math.abs(b.netCashFlow) - Math.abs(a.netCashFlow))
-                  .map((company: any, index: number) => {
+                  .sort((a, b) => Math.abs(b.netCashFlow) - Math.abs(a.netCashFlow))
+                  .map((company, index) => {
                     const avgTransaction =
                       company.transactionCount > 0
                         ? (company.totalCashIn + company.totalCashOut) / company.transactionCount
                         : 0
                     return (
-                      <TableRow key={index} className="text-xs">
+                      <TableRow key={company.companyId} className="text-xs">
                         <TableCell className="font-medium py-2">{company.companyName}</TableCell>
                         <TableCell className="text-right font-mono tabular-nums py-2 text-muted-foreground">
                           {company.transactionCount}
@@ -309,7 +348,7 @@ export function GlobalCashBook() {
                 <TableRow className="bg-secondary/50 font-semibold border-t-2 text-xs">
                   <TableCell className="py-2">Total</TableCell>
                   <TableCell className="text-right font-mono tabular-nums py-2">
-                    {companies.reduce((sum: number, c: any) => sum + c.transactionCount, 0)}
+                    {companies.reduce((sum, c) => sum + c.transactionCount, 0)}
                   </TableCell>
                   <TableCell className="text-right font-mono tabular-nums py-2 text-green-600 dark:text-green-400">
                     {formatCurrency(summary.totalCashIn)}
@@ -329,9 +368,9 @@ export function GlobalCashBook() {
                   </TableCell>
                   <TableCell className="text-right font-mono tabular-nums py-2 text-muted-foreground">
                     {formatCurrency(
-                      companies.reduce((sum: number, c: any) => sum + c.transactionCount, 0) > 0
+                      companies.reduce((sum, c) => sum + c.transactionCount, 0) > 0
                         ? (summary.totalCashIn + summary.totalCashOut) /
-                            companies.reduce((sum: number, c: any) => sum + c.transactionCount, 0)
+                            companies.reduce((sum, c) => sum + c.transactionCount, 0)
                         : 0
                     )}
                   </TableCell>
@@ -353,10 +392,10 @@ export function GlobalCashBook() {
           <CardContent className="pt-0">
             <div className="space-y-2">
               {companies
-                .sort((a: any, b: any) => Math.abs(b.netCashFlow) - Math.abs(a.netCashFlow))
-                .map((company: any, index: number) => {
+                .sort((a, b) => Math.abs(b.netCashFlow) - Math.abs(a.netCashFlow))
+                .map((company) => {
                   const totalAbsoluteFlow = companies.reduce(
-                    (sum: number, c: any) => sum + Math.abs(c.netCashFlow),
+                    (sum, c) => sum + Math.abs(c.netCashFlow),
                     0
                   )
                   const percentage =
@@ -364,7 +403,7 @@ export function GlobalCashBook() {
                       ? ((Math.abs(company.netCashFlow) / totalAbsoluteFlow) * 100).toFixed(1)
                       : "0.0"
                   return (
-                    <div key={index} className="flex items-center justify-between py-2 px-3 bg-muted/20 rounded text-xs">
+                    <div key={company.companyId} className="flex items-center justify-between py-2 px-3 bg-muted/20 rounded text-xs">
                       <span className="font-medium">{company.companyName}</span>
                       <div className="flex items-center gap-3">
                         <span
@@ -397,14 +436,14 @@ export function GlobalCashBook() {
           <CardContent className="pt-0">
             <div className="space-y-2">
               {companies
-                .sort((a: any, b: any) => b.transactionCount - a.transactionCount)
-                .map((company: any, index: number) => {
+                .sort((a, b) => b.transactionCount - a.transactionCount)
+                .map((company) => {
                   const avgTransaction =
                     company.transactionCount > 0
                       ? (company.totalCashIn + company.totalCashOut) / company.transactionCount
                       : 0
                   return (
-                    <div key={index} className="flex items-center justify-between py-2 px-3 bg-muted/20 rounded text-xs">
+                    <div key={company.companyId} className="flex items-center justify-between py-2 px-3 bg-muted/20 rounded text-xs">
                       <span className="font-medium">{company.companyName}</span>
                       <div className="flex items-center gap-3">
                         <span className="font-mono tabular-nums text-muted-foreground">

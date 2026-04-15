@@ -160,14 +160,14 @@ export interface TransactionRecord {
   id: number;
   companyId: number;
   categoryId: number;
-  transactionDate: string;
+  date: string;           // ← was transactionDate
   description: string;
   amount: number;
   transactionType: "debit" | "credit";
   referenceNumber: string | null;
   notes: string | null;
   isReconciled: boolean;
-  attachments: string | null;
+  attachments: string[] | null;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
@@ -199,13 +199,13 @@ export interface RecurringTransaction {
 export interface CreateTransactionDto {
   companyId: number;
   categoryId: number;
-  transactionDate: string;
+  date: string;           // ← was transactionDate
   description: string;
   amount: number;
   transactionType: "debit" | "credit";
   referenceNumber?: string;
   notes?: string;
-  attachments?: string;
+ attachments?: string[];
 }
 
 export interface CreateRecurringTransactionDto {
@@ -239,26 +239,7 @@ export interface CashBook {
   entries: CashBookEntry[];
 }
 
-export interface GlobalCashBook {
-  startDate: string;
-  endDate: string;
-  companies: Array<{
-    companyId: number;
-    companyName: string;
-    openingBalance: number;
-    closingBalance: number;
-    totalDebits: number;
-    totalCredits: number;
-    netChange: number;
-  }>;
-  summary: {
-    totalOpeningBalance: number;
-    totalClosingBalance: number;
-    totalDebits: number;
-    totalCredits: number;
-    totalNetChange: number;
-  };
-}
+
 
 // export interface GlobalFinancialSummary {
 //   status: number;
@@ -687,16 +668,18 @@ export async function deleteCompany(id: number): Promise<void> {
 // TRANSACTION API FUNCTIONS
 // =====================================================
 
-export async function fetchTransactions(): Promise<TransactionRecord[]> {
+export async function fetchTransactions() {
   try {
     // Use fetchWithAuth instead of native fetch
     const response = await fetchWithAuth(`${API_BASE_URL}transactions`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
+    const transactions = await response.json();
+    console.log("Fetched transactions:", transactions);
     if (!response.ok)
       throw new Error(`Failed to fetch transactions: ${response.status}`);
-    return response.json();
+    return transactions;
   } catch (error) {
     console.error("Error fetching transactions:", error);
     throw error;
@@ -1162,7 +1145,7 @@ export async function fetchGlobalBalanceSheet(
 export async function fetchGlobalCashBook(
   startDate: string,
   endDate: string
-): Promise<GlobalCashBook> {
+){
   try {
     // Use fetchWithAuth instead of native fetch
     const response = await fetchWithAuth(
@@ -1481,7 +1464,7 @@ export async function createUser(data: {
   role: User["role"];
   password: string;
 }): Promise<User> {
-  return apiCall<User>("users", {
+  return apiCall<User>("users/create", {
     method: "POST",
     body: JSON.stringify(data),
   });

@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,18 +10,18 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { Loader2 } from "lucide-react"
-import { toast } from "sonner"
-import type { Company } from "@/lib/api"
+} from "@/components/ui/alert-dialog";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import type { Company } from "@/lib/api";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || ""
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 interface DeleteCompanyDialogProps {
-  company: Company | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSuccess: () => void
+  company: Company | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
 }
 
 export function DeleteCompanyDialog({
@@ -30,37 +30,48 @@ export function DeleteCompanyDialog({
   onOpenChange,
   onSuccess,
 }: DeleteCompanyDialogProps) {
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const USER_STORAGE_Token = "irebe_tokens";
+  const storedToken = localStorage.getItem(USER_STORAGE_Token);
+  const token = storedToken !== null ? JSON.parse(storedToken) : null;
+  console.log(
+    "Attempting to retrieve token from localStorage with key:",
+    token?.accessToken,
+  );
 
   async function handleDelete() {
-    if (!company) return
+    if (!company) return;
 
-    setIsDeleting(true)
+    setIsDeleting(true);
     try {
       const response = await fetch(`${API_BASE_URL}company/${company.id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.accessToken}`,
         },
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.message || "Failed to delete company")
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to delete company");
       }
 
-      toast.success("Company deleted successfully")
-      onSuccess()
-      onOpenChange(false)
+      toast.success("Company deleted successfully");
+      onSuccess();
+      onOpenChange(false);
     } catch (error) {
-      console.error("Error deleting company:", error)
-      toast.error(error instanceof Error ? error.message : "Failed to delete company")
+      console.error("Error deleting company:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to delete company",
+      );
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
   }
 
-  if (!company) return null
+  if (!company) return null;
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -86,5 +97,5 @@ export function DeleteCompanyDialog({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }

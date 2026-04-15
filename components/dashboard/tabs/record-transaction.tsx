@@ -1,8 +1,3 @@
-
-
-
-
-
 "use client";
 
 import React, { useState } from "react";
@@ -16,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
@@ -26,12 +20,11 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import {
-  CheckCircle2,
-  AlertCircle,
   Plus,
   FileText,
   Repeat,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 import { format } from "date-fns";
 import { useAuth } from "@/lib/auth-context";
@@ -56,11 +49,36 @@ import { TransactionStats } from "./transaction-management/components/Transactio
 import { TransactionForm } from "./transaction-management/components/TransactionForm";
 import { TransactionListItem } from "./transaction-management/components/TransactionListItem";
 import { RecurringTransactionItem } from "./transaction-management/components/RecurringTransactionItem";
+import {
+  TransactionStatsSkeleton,
+  TransactionFormSkeleton,
+  TransactionListSkeleton,
+  RecurringTransactionSkeleton,
+} from "./transaction-management/components/TransactionSkeleton";
+// ✅ Import toast
+import { toast } from "sonner";
+
+// ============================================================================
+// API RESPONSE TYPES
+// ============================================================================
+
+interface TransactionsApiResponse {
+  status: number;
+  message: string;
+  data: Transaction[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
+}
 
 // ============================================================================
 // MAIN COMPONENT
 // ============================================================================
-
 
 export function TransactionManagement() {
   const queryClient = useQueryClient();
@@ -68,8 +86,6 @@ export function TransactionManagement() {
 
   const [activeTab, setActiveTab] = useState("create");
   const [selectedCompany, setSelectedCompany] = useState<number | undefined>();
-  const [success, setSuccess] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
   const [editingTransaction, setEditingTransaction] =
     useState<Transaction | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -87,53 +103,69 @@ export function TransactionManagement() {
     createdBy: user?.id || 1,
   });
 
-  // Queries
-  const { data: companies = [] } = useQuery({
+  // Queries with loading states
+  const {
+    data: companies = [],
+    isLoading: companiesLoading,
+  } = useQuery({
     queryKey: ["companies"],
     queryFn: fetchCompanies,
   });
 
-  const { data: categories = [] } = useQuery({
+  const {
+    data: categories = [],
+    isLoading: categoriesLoading,
+  } = useQuery({
     queryKey: ["leaf-categories"],
     queryFn: fetchLeafCategories,
   });
 
-  // const { data: transactionsData, isLoading: transactionsLoading } = useQuery({
-  //   queryKey: ["transactions", selectedCompany],
-  //   queryFn: () => fetchTransactions(),
-  // });
-
-  const { data: transactionsData, isLoading: transactionsLoading } = useQuery({
-    queryKey: ["transactions", selectedCompany],
-    // queryFn: () => fetchTransactions() as Promise<Transaction[]>,
-    queryFn: () => fetchTransactions() as unknown as Promise<Transaction[]>,
+  const {
+    data: transactionsData,
+    isLoading: transactionsLoading,
+    error: transactionsError,
+    isError: isTransactionsError,
+  } = useQuery<TransactionsApiResponse, Error>({
+    queryKey: ["transactions"],
+    queryFn: () => fetchTransactions(),
+    retry: 2,
+    staleTime: 30000,
   });
 
+  // Extract transactions safely
+  const transactions = React.useMemo((): Transaction[] => {
+    return transactionsData?.data ?? [];
+  }, [transactionsData]);
 
-//   const transactions = React.useMemo(() => {
-//     return transactionsData ?? [];
-// }, [transactionsData]);
+  // Handle error state with toast
+  React.useEffect(() => {
+    if (isTransactionsError && transactionsError) {
+      toast.error(`Failed to load transactions: ${transactionsError.message}`);
+    }
+  }, [isTransactionsError, transactionsError]);
 
-const transactions = React.useMemo((): Transaction[] => {
-  if (!transactionsData) return [];
-  if (Array.isArray(transactionsData)) return transactionsData as Transaction[];
-  return [];
-}, [transactionsData]);
-
-  // Mutations
+  // ✅ IMPROVED: Create mutation with toast notification
   const createMutation = useMutation({
     mutationFn: createTransaction,
-    onSuccess: () => {
-      setSuccess(true);
-      setErrorMsg("");
+    onSuccess: (response) => {
+      // ✅ Show toast success message
+      toast.success(`Transaction "${formData.description}" created successfully!`, {
+        description: `Amount: RWF ${Number(formData.amount).toLocaleString()}`,
+        duration: 5000,
+      });
+      
+      // Reset form immediately for better UX
       resetForm();
+      
+      // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
-      setTimeout(() => setSuccess(false), 5000);
     },
     onError: (error: Error) => {
-      setErrorMsg(error.message);
-      setSuccess(false);
+      toast.error("Failed to create transaction", {
+        description: error.message,
+        duration: 5000,
+      });
     },
   });
 
@@ -146,39 +178,50 @@ const transactions = React.useMemo((): Transaction[] => {
       data: Partial<CreateTransactionDto>;
     }) => updateTransaction(id, data),
     onSuccess: () => {
-      setSuccess(true);
-      setErrorMsg("");
+      toast.success("Transaction updated successfully!", {
+        duration: 4000,
+      });
       setIsEditDialogOpen(false);
       setEditingTransaction(null);
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      setTimeout(() => setSuccess(false), 5000);
     },
     onError: (error: Error) => {
-      setErrorMsg(error.message);
-      setSuccess(false);
+      toast.error("Failed to update transaction", {
+        description: error.message,
+        duration: 5000,
+      });
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: deleteTransaction,
     onSuccess: () => {
-      setSuccess(true);
-      setErrorMsg("");
+      toast.success("Transaction deleted successfully!", {
+        duration: 4000,
+      });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      setTimeout(() => setSuccess(false), 5000);
     },
     onError: (error: Error) => {
-      setErrorMsg(error.message);
-      setSuccess(false);
+      toast.error("Failed to delete transaction", {
+        description: error.message,
+        duration: 5000,
+      });
     },
   });
 
   const executeMutation = useMutation({
     mutationFn: executeRecurringTransaction,
     onSuccess: () => {
+      toast.success("Recurring transaction executed successfully!", {
+        duration: 4000,
+      });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+    },
+    onError: (error: Error) => {
+      toast.error("Failed to execute recurring transaction", {
+        description: error.message,
+        duration: 5000,
+      });
     },
   });
 
@@ -234,62 +277,51 @@ const transactions = React.useMemo((): Transaction[] => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg("");
 
     if (!formData.companyId) {
-      setErrorMsg("Please select a company");
+      toast.error("Please select a company");
       return;
     }
     if (!formData.categoryId) {
-      setErrorMsg("Please select a category");
+      toast.error("Please select a category");
       return;
     }
     if (!formData.amount || formData.amount <= 0) {
-      setErrorMsg("Please enter a valid amount");
+      toast.error("Please enter a valid amount");
       return;
     }
     if (!formData.description?.trim()) {
-      setErrorMsg("Please enter a description");
+      toast.error("Please enter a description");
       return;
     }
 
-    // createMutation.mutate(formData as CreateTransactionDto);
-  const { date, ...rest } = formData as CreateTransactionDto;
-createMutation.mutate({ ...rest, transactionDate: date } as any);
+    createMutation.mutate(formData as CreateTransactionDto);
   };
 
   const handleUpdate = () => {
     if (!editingTransaction) return;
 
-    setErrorMsg("");
-
     if (!formData.companyId) {
-      setErrorMsg("Please select a company");
+      toast.error("Please select a company");
       return;
     }
     if (!formData.categoryId) {
-      setErrorMsg("Please select a category");
+      toast.error("Please select a category");
       return;
     }
     if (!formData.amount || formData.amount <= 0) {
-      setErrorMsg("Please enter a valid amount");
+      toast.error("Please enter a valid amount");
       return;
     }
     if (!formData.description?.trim()) {
-      setErrorMsg("Please enter a description");
+      toast.error("Please enter a description");
       return;
     }
 
-    // updateMutation.mutate({
-    //   id: editingTransaction.id,
-    //   data: formData as Partial<CreateTransactionDto>,
-    // });
-   
-    const { date, ...rest } = formData as CreateTransactionDto;
-updateMutation.mutate({
-  id: editingTransaction.id,
-  data: { ...rest, transactionDate: date } as any,
-});
+    updateMutation.mutate({
+      id: editingTransaction.id,
+      data: formData as Partial<CreateTransactionDto>,
+    });
   };
 
   const updateField = (field: keyof CreateTransactionDto, value: any) => {
@@ -328,24 +360,19 @@ updateMutation.mutate({
   };
 
   // Filter transactions
-  // const recurringTransactions = transactions.filter((t) => t.isRecurring);
-  // const regularTransactions = transactions.filter((t) => !t.isRecurring);
-   const recurringTransactions = transactions.filter((t) => t.isRecurring);
+  const recurringTransactions = transactions.filter((t) => t.isRecurring);
   const regularTransactions = transactions.filter((t) => !t.isRecurring);
 
+  // Stats - All Transactions (using categoryType for accuracy)
+  const totalIncome = transactions
+    .filter((t) => t.category?.categoryType === "revenue")
+    .reduce((sum, t) => sum + Number(t.totalAmount), 0);
 
-  // // Stats - All Transactions
+  const totalExpenses = transactions
+    .filter((t) => t.category?.categoryType === "expense")
+    .reduce((sum, t) => sum + Number(t.totalAmount), 0);
 
-
-  // const totalIncome = transactions
-  //   .filter((t) => t.transactionType === TransactionType.DEBIT)
-  //   .reduce((sum, t) => sum + Number(t.totalAmount), 0);
-
-  // const totalExpenses = transactions
-  //   .filter((t) => t.transactionType === TransactionType.CREDIT)
-  //   .reduce((sum, t) => sum + Number(t.totalAmount), 0);
-
-  // // Stats - Recurring Transactions
+  // Stats - Recurring Transactions
   const recurringIncome = recurringTransactions
     .filter((t) => t.transactionType === TransactionType.DEBIT)
     .reduce((sum, t) => sum + Number(t.totalAmount), 0);
@@ -354,70 +381,37 @@ updateMutation.mutate({
     .filter((t) => t.transactionType === TransactionType.CREDIT)
     .reduce((sum, t) => sum + Number(t.totalAmount), 0);
 
-
-  // ✅ CORRECTED Stats - All Transactions
-
-  // Using category.categoryType instead of transactionType
-  const totalIncome = transactions
-    .filter((t) => t.category?.categoryType === 'revenue')
-    .reduce((sum, t) => sum + Number(t.totalAmount), 0);
-
-  const totalExpenses = transactions
-    .filter((t) => t.category?.categoryType === 'expense')
-    .reduce((sum, t) => sum + Number(t.totalAmount), 0);
-
-
-
-  // ✅ CORRECTED Stats - Recurring Transactions
-  // const recurringIncome = recurringTransactions
-  //   .filter((t) => t.category?.categoryType === 'revenue')
-  //   .reduce((sum, t) => sum + Number(t.totalAmount), 0);
-
-  // const recurringExpenses = recurringTransactions
-  //   .filter((t) => t.category?.categoryType === 'expense')
-  //   .reduce((sum, t) => sum + Number(t.totalAmount), 0);
-
+  // Loading state for initial data
+  const isInitialLoading = companiesLoading || categoriesLoading;
 
   return (
     <div className="space-y-4">
-      {/* Stats Section */}
-      <TransactionStats
-        totalIncome={totalIncome}
-        totalExpenses={totalExpenses}
-        recurringIncome={recurringIncome}
-        recurringExpenses={recurringExpenses}
-      />
-
-      {/* Success/Error Messages */}
-      {success && (
-        <Alert className="bg-green-50 border-green-200 text-green-800 py-2">
-          <CheckCircle2 className="h-3 w-3" />
-          <AlertDescription className="text-xs">
-            Transaction {editingTransaction ? "updated" : "recorded"}{" "}
-            successfully!
-          </AlertDescription>
-        </Alert>
+      {/* ✅ Stats Section with Grey Skeleton */}
+      {transactionsLoading ? (
+        <TransactionStatsSkeleton />
+      ) : (
+        <TransactionStats
+          totalIncome={totalIncome}
+          totalExpenses={totalExpenses}
+          recurringIncome={recurringIncome}
+          recurringExpenses={recurringExpenses}
+        />
       )}
 
-      {errorMsg && (
-        <Alert className="bg-red-50 border-red-200 text-red-800 py-2">
-          <AlertCircle className="h-3 w-3" />
-          <AlertDescription className="text-xs">{errorMsg}</AlertDescription>
-        </Alert>
-      )}
+      {/* ✅ REMOVED: Alert components - now using toast */}
 
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3 h-8">
-          <TabsTrigger value="create" className="text-xs">
+        <TabsList className="grid w-full grid-cols-3 h-8 bg-gray-100">
+          <TabsTrigger value="create" className="text-xs data-[state=active]:bg-white data-[state=active]:text-gray-900">
             <Plus className="h-3 w-3 mr-1" />
             Create
           </TabsTrigger>
-          <TabsTrigger value="list" className="text-xs">
+          <TabsTrigger value="list" className="text-xs data-[state=active]:bg-white data-[state=active]:text-gray-900">
             <FileText className="h-3 w-3 mr-1" />
             All Transactions
           </TabsTrigger>
-          <TabsTrigger value="recurring" className="text-xs">
+          <TabsTrigger value="recurring" className="text-xs data-[state=active]:bg-white data-[state=active]:text-gray-900">
             <Repeat className="h-3 w-3 mr-1" />
             Recurring
           </TabsTrigger>
@@ -425,60 +419,68 @@ updateMutation.mutate({
 
         {/* CREATE TRANSACTION TAB */}
         <TabsContent value="create" className="mt-3">
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3 pt-4">
-              <CardTitle className="text-sm">Record New Transaction</CardTitle>
+          <Card className="shadow-sm border-gray-200">
+            <CardHeader className="pb-3 pt-4 bg-gray-50/50">
+              <CardTitle className="text-sm flex items-center gap-2 text-gray-700">
+                <Sparkles className="h-4 w-4 text-gray-500" />
+                Record New Transaction
+              </CardTitle>
             </CardHeader>
             <CardContent className="pb-4">
-              <form onSubmit={handleSubmit}>
-                <TransactionForm
-                  formData={formData}
-                  companies={companies}
-                  categories={categories}
-                  categoriesByType={categoriesByType}
-                  onFieldUpdate={updateField}
-                  onTaxCalculate={calculateTax}
-                  getCategoryDisplayName={getCategoryDisplayName}
-                />
+              {isInitialLoading ? (
+                <TransactionFormSkeleton />
+              ) : (
+                <form onSubmit={handleSubmit}>
+                  <TransactionForm
+                    formData={formData}
+                    companies={companies}
+                    categories={categories}
+                    categoriesByType={categoriesByType}
+                    onFieldUpdate={updateField}
+                    onTaxCalculate={calculateTax}
+                    getCategoryDisplayName={getCategoryDisplayName}
+                  />
 
-                {/* Action Buttons */}
-                <div className="flex gap-2 mt-4">
-                  <Button
-                    type="submit"
-                    size="sm"
-                    disabled={createMutation.isPending}
-                    className="text-xs h-7"
-                  >
-                    {createMutation.isPending ? (
-                      <>
-                        <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                        Recording...
-                      </>
-                    ) : (
-                      "Record Transaction"
-                    )}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={resetForm}
-                    className="text-xs h-7"
-                  >
-                    Clear Form
-                  </Button>
-                </div>
-              </form>
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 mt-4">
+                    <Button
+                      type="submit"
+                      size="sm"
+                      disabled={createMutation.isPending}
+                      className="text-xs h-7 bg-gray-900 hover:bg-gray-800 text-white"
+                    >
+                      {createMutation.isPending ? (
+                        <>
+                          <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                          Recording...
+                        </>
+                      ) : (
+                        "Record Transaction"
+                      )}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={resetForm}
+                      disabled={createMutation.isPending}
+                      className="text-xs h-7 border-gray-300 text-gray-600 hover:bg-gray-50"
+                    >
+                      Clear Form
+                    </Button>
+                  </div>
+                </form>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
 
         {/* TRANSACTIONS LIST TAB */}
         <TabsContent value="list" className="mt-3">
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3 pt-4">
+          <Card className="shadow-sm border-gray-200">
+            <CardHeader className="pb-3 pt-4 bg-gray-50/50">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm">All Transactions</CardTitle>
+                <CardTitle className="text-sm text-gray-700">All Transactions</CardTitle>
                 <Select
                   value={selectedCompany?.toString() || "all"}
                   onValueChange={(value) =>
@@ -487,7 +489,7 @@ updateMutation.mutate({
                     )
                   }
                 >
-                  <SelectTrigger className="w-[180px] h-7 text-xs">
+                  <SelectTrigger className="w-[180px] h-7 text-xs border-gray-300">
                     <SelectValue placeholder="Filter by company" />
                   </SelectTrigger>
                   <SelectContent>
@@ -509,13 +511,13 @@ updateMutation.mutate({
             </CardHeader>
             <CardContent className="pb-4">
               {transactionsLoading ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                </div>
+                <TransactionListSkeleton />
               ) : regularTransactions.length === 0 ? (
-                <p className="text-center py-6 text-xs text-muted-foreground">
-                  No transactions found
-                </p>
+                <div className="text-center py-8 text-gray-400">
+                  <FileText className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                  <p className="text-sm text-gray-500">No transactions found</p>
+                  <p className="text-xs mt-1 text-gray-400">Create your first transaction to get started</p>
+                </div>
               ) : (
                 <div className="space-y-2">
                   {regularTransactions.map((transaction) => (
@@ -535,15 +537,19 @@ updateMutation.mutate({
 
         {/* RECURRING TRANSACTIONS TAB */}
         <TabsContent value="recurring" className="mt-3">
-          <Card className="shadow-sm">
-            <CardHeader className="pb-3 pt-4">
-              <CardTitle className="text-sm">Recurring Transactions</CardTitle>
+          <Card className="shadow-sm border-gray-200">
+            <CardHeader className="pb-3 pt-4 bg-gray-50/50">
+              <CardTitle className="text-sm text-gray-700">Recurring Transactions</CardTitle>
             </CardHeader>
             <CardContent className="pb-4">
-              {recurringTransactions.length === 0 ? (
-                <p className="text-center py-6 text-xs text-muted-foreground">
-                  No recurring transactions found
-                </p>
+              {transactionsLoading ? (
+                <RecurringTransactionSkeleton />
+              ) : recurringTransactions.length === 0 ? (
+                <div className="text-center py-8 text-gray-400">
+                  <Repeat className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                  <p className="text-sm text-gray-500">No recurring transactions found</p>
+                  <p className="text-xs mt-1 text-gray-400">Set up recurring transactions for regular payments</p>
+                </div>
               ) : (
                 <div className="space-y-2">
                   {recurringTransactions.map((transaction) => (
@@ -565,50 +571,56 @@ updateMutation.mutate({
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader className="pb-2">
-            <DialogTitle className="text-sm">Edit Transaction</DialogTitle>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto border-gray-200">
+          <DialogHeader className="pb-2 border-b border-gray-100">
+            <DialogTitle className="text-sm text-gray-700">Edit Transaction</DialogTitle>
           </DialogHeader>
 
-          <TransactionForm
-            formData={formData}
-            companies={companies}
-            categories={categories}
-            categoriesByType={categoriesByType}
-            onFieldUpdate={updateField}
-            onTaxCalculate={calculateTax}
-            getCategoryDisplayName={getCategoryDisplayName}
-          />
+          {isInitialLoading ? (
+            <TransactionFormSkeleton />
+          ) : (
+            <>
+              <TransactionForm
+                formData={formData}
+                companies={companies}
+                categories={categories}
+                categoriesByType={categoriesByType}
+                onFieldUpdate={updateField}
+                onTaxCalculate={calculateTax}
+                getCategoryDisplayName={getCategoryDisplayName}
+              />
 
-          <DialogFooter className="gap-2 pt-3 border-t">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setIsEditDialogOpen(false);
-                setEditingTransaction(null);
-                resetForm();
-              }}
-              className="text-xs h-7"
-            >
-              Cancel
-            </Button>
-            <Button
-              size="sm"
-              onClick={handleUpdate}
-              disabled={updateMutation.isPending}
-              className="text-xs h-7"
-            >
-              {updateMutation.isPending ? (
-                <>
-                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                  Updating...
-                </>
-              ) : (
-                "Update Transaction"
-              )}
-            </Button>
-          </DialogFooter>
+              <DialogFooter className="gap-2 pt-3 border-t border-gray-100">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIsEditDialogOpen(false);
+                    setEditingTransaction(null);
+                    resetForm();
+                  }}
+                  className="text-xs h-7 border-gray-300 text-gray-600 hover:bg-gray-50"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleUpdate}
+                  disabled={updateMutation.isPending}
+                  className="text-xs h-7 bg-gray-900 hover:bg-gray-800 text-white"
+                >
+                  {updateMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    "Update Transaction"
+                  )}
+                </Button>
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </div>
