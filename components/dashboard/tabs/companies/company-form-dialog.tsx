@@ -84,30 +84,44 @@ interface CompanyFormDialogProps {
 
 // Helper function to get current user from localStorage
 function getCurrentUserId(): number {
-  if (typeof window === 'undefined') return 1
-  
-  try {
+  if (typeof window === "undefined") return 1
 
+  try {
     const USER_STORAGE_KEY = "irebe_user"
-     const USER_STORAGE_Token = "irebe_tokens"
+    const USER_STORAGE_Token = "irebe_tokens"
 
     const storedUser = localStorage.getItem(USER_STORAGE_KEY)
     const storedToken = localStorage.getItem(USER_STORAGE_Token)
 
-
-console.log("Retrieved user from localStorage:", storedUser)
-console.log("Retrieved token from localStorage:", storedToken)
+    console.log("Retrieved user from localStorage:", storedUser)
+    console.log("Retrieved token from localStorage:", storedToken)
 
     if (storedUser) {
-
       const parsedUser = JSON.parse(storedUser)
-      return parsedUser?.id 
+      return parsedUser?.id
     }
   } catch (error) {
     console.error("Error reading user from localStorage:", error)
   }
-  
+
   return 1 // Default fallback
+}
+
+// Map API error messages to form field names
+const FIELD_ERROR_MAP: Record<string, keyof CompanyFormValues> = {
+  phoneNumber: "phoneNumber",
+  website: "website",
+  taxId: "taxId",
+  email: "email",
+  name: "name",
+  annualRevenue: "annualRevenue",
+  employeeCount: "employeeCount",
+  registrationNumber: "registrationNumber",
+  description: "description",
+  companyType: "companyType",
+  industry: "industry",
+  ceo: "ceo",
+  notes: "notes",
 }
 
 export function CompanyFormDialog({
@@ -118,7 +132,7 @@ export function CompanyFormDialog({
   onSuccess,
 }: CompanyFormDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  
+
   // Get current user ID only once using useMemo
   const currentUserId = useMemo(() => getCurrentUserId(), [])
 
@@ -186,50 +200,96 @@ export function CompanyFormDialog({
     }
   }, [open, mode, company, form, currentUserId])
 
-  
- async function onSubmit(values: CompanyFormValues) {
-  setIsSubmitting(true)
-  try {
-    const url =
-      mode === "create"
-        ? `${API_BASE_URL}company/create`
-        : `${API_BASE_URL}company/${company?.id}`
+  async function onSubmit(values: CompanyFormValues) {
+    setIsSubmitting(true)
+    try {
+      const url =
+        mode === "create"
+          ? `${API_BASE_URL}company/create`
+          : `${API_BASE_URL}company/${company?.id}`
 
-    const method = mode === "create" ? "POST" : "PATCH"
+      const method = mode === "create" ? "POST" : "PATCH"
 
-    // Get token from localStorage
-    const USER_STORAGE_Token = "irebe_tokens"
-const storedToken = localStorage.getItem(USER_STORAGE_Token)
-const token = storedToken !== null ? JSON.parse(storedToken) : null
-    console.log("Attempting to retrieve token from localStorage with key:", token?.accessToken)
+      const USER_STORAGE_Token = "irebe_tokens"
+      const storedToken = localStorage.getItem(USER_STORAGE_Token)
+      const token = storedToken !== null ? JSON.parse(storedToken) : null
 
-    const response = await fetch(url, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token?.accessToken}`
-      },
-      body: JSON.stringify(values),
-    })
+      console.log(
+        "Attempting to retrieve token from localStorage with key:",
+        token?.accessToken
+      )
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}))
-      throw new Error(errorData.message || `Failed to ${mode} company`)
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token?.accessToken}`,
+        },
+        body: JSON.stringify(values),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+
+        // Handle array of validation error messages from the API
+        if (errorData.message && Array.isArray(errorData.message)) {
+          let hasFieldError = false
+          const unmappedErrors: string[] = []
+
+          errorData.message.forEach((msg: string) => {
+            // Find which field this error belongs to by checking if the
+            // field key appears anywhere in the error message string
+            const matchedField = Object.keys(FIELD_ERROR_MAP).find((key) =>
+              msg.toLowerCase().includes(key.toLowerCase())
+            )
+
+            if (matchedField) {
+              form.setError(FIELD_ERROR_MAP[matchedField], {
+                type: "server",
+                message: msg,
+              })
+              hasFieldError = true
+            } else {
+              unmappedErrors.push(msg)
+            }
+          })
+
+          // Show a toast for any errors that couldn't be mapped to a field
+          if (unmappedErrors.length > 0) {
+            toast.error(unmappedErrors.join(". "))
+          } else if (!hasFieldError) {
+            toast.error("Validation failed. Please check the form.")
+          }
+
+          // Return early so the dialog stays open for the user to fix errors
+          return
+        }
+
+        // Handle single string error message
+        throw new Error(
+          typeof errorData.message === "string"
+            ? errorData.message
+            : `Failed to ${mode} company`
+        )
+      }
+
+      toast.success(
+        mode === "create"
+          ? "Company created successfully"
+          : "Company updated successfully"
+      )
+
+      onSuccess()
+      onOpenChange(false)
+    } catch (error) {
+      console.error(`Error ${mode}ing company:`, error)
+      toast.error(
+        error instanceof Error ? error.message : `Failed to ${mode} company`
+      )
+    } finally {
+      setIsSubmitting(false)
     }
-
-    toast.success(
-      mode === "create" ? "Company created successfully" : "Company updated successfully"
-    )
-
-    onSuccess()
-    onOpenChange(false)
-  } catch (error) {
-    console.error(`Error ${mode}ing company:`, error)
-    toast.error(error instanceof Error ? error.message : `Failed to ${mode} company`)
-  } finally {
-    setIsSubmitting(false)
   }
-}
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
