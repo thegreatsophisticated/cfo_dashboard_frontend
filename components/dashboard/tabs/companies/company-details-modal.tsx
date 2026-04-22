@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import {
   Dialog,
@@ -56,30 +56,39 @@ interface CompanyDetailsModalProps {
   onDelete: (company: Company) => void
 }
 
-function formatCurrency(amount: number | null | string): string {
+function formatCurrency(amount: number | null | string | undefined): string {
   if (amount === null || amount === undefined) return "RWF 0"
   const numAmount = typeof amount === "string" ? parseFloat(amount) : amount
+  if (isNaN(numAmount)) return "RWF 0"
   return `RWF ${numAmount.toLocaleString()}`
 }
 
-function formatDate(dateString: string | null): string {
+function formatDate(dateString: string | null | undefined): string {
   if (!dateString) return "N/A"
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  })
+  try {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    })
+  } catch {
+    return "N/A"
+  }
 }
 
-function formatDateTime(dateString: string | null): string {
+function formatDateTime(dateString: string | null | undefined): string {
   if (!dateString) return "N/A"
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  })
+  try {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  } catch {
+    return "N/A"
+  }
 }
 
 // Company Info Tab Component
@@ -174,7 +183,7 @@ function CompanyInfoTab({ company }: { company: Company }) {
                     <BarChart3 className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
                   </div>
                 </div>
-                <p className="text-[9px] text-muted-foreground font-medium mb-0.5">Today's Profit</p>
+                <p className="text-[9px] text-muted-foreground font-medium mb-0.5">Today&apos;s Profit</p>
                 <p className="text-sm font-bold font-serif tabular-nums text-amber-600 dark:text-amber-400">
                   {formatCurrency(company.todayProfit)}
                 </p>
@@ -347,7 +356,6 @@ function CompanyInfoTab({ company }: { company: Company }) {
 }
 
 // Transactions Tab Component
-// Corrected Transactions Tab Component
 function TransactionsTab({ companyId }: { companyId: number }) {
   const { data: transactionsData, isLoading } = useQuery({
     queryKey: ["company-transactions", companyId],
@@ -362,8 +370,9 @@ function TransactionsTab({ companyId }: { companyId: number }) {
     )
   }
 
-  // const transactions = transactionsData?.transactions || []
-  const transactions = transactionsData || []
+  const transactions = Array.isArray(transactionsData) 
+    ? transactionsData 
+    : (transactionsData?.data ?? [])
 
   if (transactions.length === 0) {
     return (
@@ -377,14 +386,13 @@ function TransactionsTab({ companyId }: { companyId: number }) {
     )
   }
 
-  // ✅ CORRECTED: Calculate stats based on categoryType instead of transactionType
+  // Calculate stats based on categoryType
   const revenueCount = transactions.filter((t: any) => t.category?.categoryType === 'revenue').length
   const expenseCount = transactions.filter((t: any) => t.category?.categoryType === 'expense').length
   const assetCount = transactions.filter((t: any) => t.category?.categoryType === 'asset').length
   const liabilityCount = transactions.filter((t: any) => t.category?.categoryType === 'liability').length
   const equityCount = transactions.filter((t: any) => t.category?.categoryType === 'equity').length
 
-  // Helper function to get category badge variant
   const getCategoryBadgeVariant = (categoryType: string | null) => {
     switch (categoryType?.toLowerCase()) {
       case 'revenue':
@@ -404,50 +412,36 @@ function TransactionsTab({ companyId }: { companyId: number }) {
 
   const getCategoryLabel = (categoryType: string | null) => {
     switch (categoryType?.toLowerCase()) {
-      case 'revenue':
-        return 'Revenue'
-      case 'expense':
-        return 'Expense'
-      case 'asset':
-        return 'Asset'
-      case 'liability':
-        return 'Liability'
-      case 'equity':
-        return 'Equity'
-      default:
-        return categoryType || 'Other'
+      case 'revenue': return 'Revenue'
+      case 'expense': return 'Expense'
+      case 'asset': return 'Asset'
+      case 'liability': return 'Liability'
+      case 'equity': return 'Equity'
+      default: return categoryType || 'Other'
     }
   }
 
   const getAmountColor = (categoryType: string | null) => {
     switch (categoryType?.toLowerCase()) {
-      case 'revenue':
-        return 'text-emerald-600 dark:text-emerald-400'
-      case 'expense':
-        return 'text-red-600 dark:text-red-400'
-      case 'asset':
-        return 'text-blue-600 dark:text-blue-400'
-      case 'liability':
-        return 'text-orange-600 dark:text-orange-400'
-      case 'equity':
-        return 'text-purple-600 dark:text-purple-400'
-      default:
-        return 'text-gray-600 dark:text-gray-400'
+      case 'revenue': return 'text-emerald-600 dark:text-emerald-400'
+      case 'expense': return 'text-red-600 dark:text-red-400'
+      case 'asset': return 'text-blue-600 dark:text-blue-400'
+      case 'liability': return 'text-orange-600 dark:text-orange-400'
+      case 'equity': return 'text-purple-600 dark:text-purple-400'
+      default: return 'text-gray-600 dark:text-gray-400'
     }
   }
 
   return (
     <ScrollArea className="h-[500px] pr-3">
       <div className="space-y-3">
-        {/* ✅ Enhanced Summary Cards - Now shows all 5 category types */}
+        {/* Summary Cards */}
         <div className="grid grid-cols-3 gap-2">
-          {/* Total Transactions */}
           <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 rounded-md p-3 border border-blue-200 dark:border-blue-800">
             <p className="text-[9px] text-muted-foreground mb-0.5 font-medium">Total Transactions</p>
             <p className="text-lg font-bold font-serif">{transactions.length}</p>
           </div>
 
-          {/* Revenue */}
           <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 rounded-md p-3 border border-emerald-200 dark:border-emerald-800">
             <p className="text-[9px] text-muted-foreground mb-0.5 font-medium">Revenue</p>
             <p className="text-lg font-bold font-serif text-emerald-600 dark:text-emerald-400">
@@ -455,7 +449,6 @@ function TransactionsTab({ companyId }: { companyId: number }) {
             </p>
           </div>
 
-          {/* Expenses */}
           <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/20 dark:to-orange-950/20 rounded-md p-3 border border-red-200 dark:border-red-800">
             <p className="text-[9px] text-muted-foreground mb-0.5 font-medium">Expenses</p>
             <p className="text-lg font-bold font-serif text-red-600 dark:text-red-400">
@@ -463,7 +456,6 @@ function TransactionsTab({ companyId }: { companyId: number }) {
             </p>
           </div>
 
-          {/* Assets (if any) */}
           {assetCount > 0 && (
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-md p-3 border border-blue-200 dark:border-blue-800">
               <p className="text-[9px] text-muted-foreground mb-0.5 font-medium">Assets</p>
@@ -473,7 +465,6 @@ function TransactionsTab({ companyId }: { companyId: number }) {
             </div>
           )}
 
-          {/* Liabilities (if any) */}
           {liabilityCount > 0 && (
             <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20 rounded-md p-3 border border-orange-200 dark:border-orange-800">
               <p className="text-[9px] text-muted-foreground mb-0.5 font-medium">Liabilities</p>
@@ -483,7 +474,6 @@ function TransactionsTab({ companyId }: { companyId: number }) {
             </div>
           )}
 
-          {/* Equity (if any) */}
           {equityCount > 0 && (
             <div className="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/20 dark:to-violet-950/20 rounded-md p-3 border border-purple-200 dark:border-purple-800">
               <p className="text-[9px] text-muted-foreground mb-0.5 font-medium">Equity</p>
@@ -531,7 +521,6 @@ function TransactionsTab({ companyId }: { companyId: number }) {
                       </div>
                     </TableCell>
 
-                    {/* ✅ CORRECTED: Category Type Badge (Primary) */}
                     <TableCell className="py-2">
                       <Badge
                         variant="outline"
@@ -548,7 +537,6 @@ function TransactionsTab({ companyId }: { companyId: number }) {
                       </Badge>
                     </TableCell>
 
-                    {/* ✅ NEW: Transaction Direction Badge (Secondary) */}
                     <TableCell className="py-2">
                       <Badge
                         variant="outline"
@@ -570,7 +558,6 @@ function TransactionsTab({ companyId }: { companyId: number }) {
                       </Badge>
                     </TableCell>
 
-                    {/* ✅ CORRECTED: Amount colored by category type */}
                     <TableCell className={cn(
                       "text-right font-serif font-semibold tabular-nums text-xs py-2",
                       getAmountColor(transaction.category?.categoryType)
@@ -603,7 +590,8 @@ function TransactionsTab({ companyId }: { companyId: number }) {
   )
 }
 
-// Income Statement Tab Component
+// Income Statement Tab Component - FIXED for both API structures
+// Income Statement Tab Component - FIXED for nested API structure
 function IncomeStatementTab({ companyId }: { companyId: number }) {
   const [year, setYear] = useState(new Date().getFullYear())
   
@@ -632,19 +620,10 @@ function IncomeStatementTab({ companyId }: { companyId: number }) {
     )
   }
 
-  // const incomeStatement = data?.incomeStatement
-  const incomeStatement = data ? {
-  companyName: data.companies?.[0]?.companyName ?? "",
-  period: data.summary?.period,
-  revenue: { total: data.summary?.totalRevenue, breakdown: [] },
-  costOfSales: { total: data.summary?.totalCostOfSales, breakdown: [] },
-  grossProfit: data.summary?.totalGrossProfit,
-  operatingExpenses: { total: data.summary?.totalOperatingExpenses, breakdown: [] },
-  netProfit: data.summary?.totalNetProfit,
-  profitMargin: data.summary?.averageProfitMargin,
-} : null
+  // FIXED: Read from nested incomeStatement object
+  const incomeStatement = (data as any)?.incomeStatement
 
-  if (!incomeStatement) {
+  if (!incomeStatement || !incomeStatement.companyName) {
     return (
       <div className="flex flex-col items-center justify-center h-[500px] text-center">
         <BarChart3 className="h-12 w-12 text-muted-foreground/50 mb-3" />
@@ -699,8 +678,8 @@ function IncomeStatementTab({ companyId }: { companyId: number }) {
         {/* Revenue */}
         <StatementSection
           title="REVENUE"
-          items={incomeStatement.revenue.breakdown}
-          total={incomeStatement.revenue.total}
+          items={incomeStatement.revenue?.breakdown}
+          total={incomeStatement.revenue?.total ?? 0}
           colorClass="blue"
           icon={<TrendingUp className="h-3 w-3" />}
         />
@@ -708,8 +687,8 @@ function IncomeStatementTab({ companyId }: { companyId: number }) {
         {/* Cost of Sales */}
         <StatementSection
           title="COST OF SALES"
-          items={incomeStatement.costOfSales.breakdown}
-          total={incomeStatement.costOfSales.total}
+          items={incomeStatement.costOfSales?.breakdown}
+          total={incomeStatement.costOfSales?.total ?? 0}
           colorClass="orange"
         />
 
@@ -726,8 +705,8 @@ function IncomeStatementTab({ companyId }: { companyId: number }) {
         {/* Operating Expenses */}
         <StatementSection
           title="OPERATING EXPENSES"
-          items={incomeStatement.operatingExpenses.breakdown}
-          total={incomeStatement.operatingExpenses.total}
+          items={incomeStatement.operatingExpenses?.breakdown}
+          total={incomeStatement.operatingExpenses?.total ?? 0}
           colorClass="red"
         />
 
@@ -748,8 +727,7 @@ function IncomeStatementTab({ companyId }: { companyId: number }) {
     </ScrollArea>
   )
 }
-
-// Balance Sheet Tab Component
+// Balance Sheet Tab Component - FIXED for both API structures
 function BalanceSheetTab({ companyId }: { companyId: number }) {
   const [asOfDate, setAsOfDate] = useState(new Date().toISOString().split("T")[0])
   
@@ -778,18 +756,33 @@ function BalanceSheetTab({ companyId }: { companyId: number }) {
     )
   }
 
-  // const balanceSheet = data?.balanceSheet
-  const balanceSheet = data ? {
-  companyName: data.companies?.[0]?.companyName ?? "",
-  asOfDate: data.summary?.asOfDate,
-  assets: { total: data.summary?.totalAssets, breakdown: [] },
-  liabilities: { total: data.summary?.totalLiabilities, breakdown: [] },
-  equity: { total: data.summary?.totalEquity, capitalContributed: 0, retainedEarnings: data.companies?.[0]?.retainedEarnings ?? 0, breakdown: [] },
-  totalLiabilitiesAndEquity: data.summary?.totalAssets,
-  balanceCheck: data.summary?.balanceCheck,
-} : null
+  // FIXED: Support both API response structures
+  // Structure 1: { balanceSheet: { companyName, asOfDate, assets, liabilities, equity, ... } }
+  // Structure 2: { summary: {...}, companies: [...] }
+  const raw = data?.balanceSheet || data
 
-  if (!balanceSheet) {
+  const balanceSheet = raw ? {
+    companyName: raw.companyName ?? raw.companies?.[0]?.companyName ?? "",
+    asOfDate: raw.asOfDate ?? raw.summary?.asOfDate ?? asOfDate,
+    assets: {
+      total: raw.assets?.total ?? raw.summary?.totalAssets ?? 0,
+      breakdown: raw.assets?.breakdown ?? []
+    },
+    liabilities: {
+      total: raw.liabilities?.total ?? raw.summary?.totalLiabilities ?? 0,
+      breakdown: raw.liabilities?.breakdown ?? []
+    },
+    equity: {
+      total: raw.equity?.total ?? raw.summary?.totalEquity ?? 0,
+      capitalContributed: raw.equity?.capitalContributed ?? 0,
+      retainedEarnings: raw.equity?.retainedEarnings ?? raw.companies?.[0]?.retainedEarnings ?? 0,
+      breakdown: raw.equity?.breakdown ?? []
+    },
+    totalLiabilitiesAndEquity: raw.totalLiabilitiesAndEquity ?? raw.summary?.totalAssets ?? 0,
+    balanceCheck: raw.balanceCheck ?? raw.summary?.balanceCheck ?? "UNBALANCED",
+  } : null
+
+  if (!balanceSheet || !balanceSheet.companyName) {
     return (
       <div className="flex flex-col items-center justify-center h-[500px] text-center">
         <Scale className="h-12 w-12 text-muted-foreground/50 mb-3" />

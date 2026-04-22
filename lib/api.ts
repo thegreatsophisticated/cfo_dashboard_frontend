@@ -706,7 +706,8 @@ export async function fetchTransactionById(
 
 export async function fetchCompanyTransactions(
   companyId: number
-): Promise<TransactionRecord[]> {
+)
+ {
   try {
     // Use fetchWithAuth instead of native fetch
     const response = await fetchWithAuth(
@@ -1028,7 +1029,7 @@ export async function executeRecurringTransaction(
 export async function fetchIncomeStatement(
   companyId: number,
   year: number
-): Promise<GlobalIncomeStatementResponse> {
+) {
   try {
     // Use fetchWithAuth instead of native fetch
     const response = await fetchWithAuth(
@@ -1050,7 +1051,7 @@ export async function fetchIncomeStatement(
 export async function fetchBalanceSheet(
   companyId: number,
   asOfDate: string
-): Promise<GlobalBalanceSheetResponse> {
+) {
   try {
     // Use fetchWithAuth instead of native fetch
     const response = await fetchWithAuth(
@@ -1060,6 +1061,7 @@ export async function fetchBalanceSheet(
         headers: getAuthHeaders(),
       }
     );
+    console.log("Balance Sheet Response:", response);
     if (!response.ok)
       throw new Error(`Failed to fetch balance sheet: ${response.status}`);
     return response.json();
