@@ -1,4 +1,4 @@
-// File: /Users/mac/Documents/dashboard-cfo-irebe/app/page.tsx
+// File: /Users/mac/Documents/cfo_dashboard_frontend-main/app/page.tsx
 import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

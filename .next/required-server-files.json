@@ -96,7 +96,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "/Users/mac/Documents/dashboard-cfo-irebe",
+    "outputFileTracingRoot": "/Users/mac/Documents/cfo_dashboard_frontend-main",
     "experimental": {
       "nodeMiddleware": false,
       "cacheLife": {
@@ -279,10 +279,10 @@
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.mjs",
     "turbopack": {
-      "root": "/Users/mac/Documents/dashboard-cfo-irebe"
+      "root": "/Users/mac/Documents/cfo_dashboard_frontend-main"
     }
   },
-  "appDir": "/Users/mac/Documents/dashboard-cfo-irebe",
+  "appDir": "/Users/mac/Documents/cfo_dashboard_frontend-main",
   "relativeAppDir": "",
   "files": [
     ".next/routes-manifest.json",
