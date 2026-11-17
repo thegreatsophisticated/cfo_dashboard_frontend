@@ -3,7 +3,6 @@ import {
   useContext,
   useState,
   useCallback,
-  useEffect,
   type ReactNode,
 } from "react";
 import { useNavigate } from "react-router-dom";
@@ -30,68 +29,65 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const USER_STORAGE_KEY = "irebe_user";
 const TOKENS_STORAGE_KEY = "irebe_tokens";
 
+// Read the saved session synchronously so the first render already knows it
+function readStoredSession(): { user: AuthUser | null; tokens: AuthTokens | null } {
+  try {
+    const storedUser = localStorage.getItem(USER_STORAGE_KEY);
+    const storedTokens = localStorage.getItem(TOKENS_STORAGE_KEY);
+    if (storedUser && storedTokens) {
+      return {
+        user: JSON.parse(storedUser) as AuthUser,
+        tokens: JSON.parse(storedTokens) as AuthTokens,
+      };
+    }
+  } catch (err) {
+    console.error("Failed to restore auth:", err);
+    localStorage.removeItem(USER_STORAGE_KEY);
+    localStorage.removeItem(TOKENS_STORAGE_KEY);
+  }
+  return { user: null, tokens: null };
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [tokens, setTokens] = useState<AuthTokens | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(() => readStoredSession().user);
+  const [tokens, setTokens] = useState<AuthTokens | null>(() => readStoredSession().tokens);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { login: loginRequest } = useLoginApi();
   const navigate = useNavigate();
 
-  // Restore session on mount
-  useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem(USER_STORAGE_KEY);
-      const storedTokens = localStorage.getItem(TOKENS_STORAGE_KEY);
-      if (storedUser && storedTokens) {
-        setUser(JSON.parse(storedUser));
-        setTokens(JSON.parse(storedTokens));
-      }
-    } catch (err) {
-      console.error("Failed to restore auth:", err);
-      localStorage.removeItem(USER_STORAGE_KEY);
-      localStorage.removeItem(TOKENS_STORAGE_KEY);
-    }
-  }, []);
-
-
-
   const login = useCallback(
-  async (email: string, password: string): Promise<boolean> => {
-    setIsLoading(true);
-    setError(null);
+    async (email: string, password: string): Promise<boolean> => {
+      setIsLoading(true);
+      setError(null);
 
-    try {
-      const data = await loginRequest(email, password);
+      try {
+        const data = await loginRequest(email, password);
 
-      setUser(data.user);
-      setTokens({
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
-      });
-
-      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(data.user));
-      localStorage.setItem(
-        TOKENS_STORAGE_KEY,
-        JSON.stringify({
+        const newTokens: AuthTokens = {
           accessToken: data.accessToken,
           refreshToken: data.refreshToken,
-        })
-      );
+        };
 
-      navigate("/dashboard");
-      return true;
-    } catch (err) {
-      const message =
-        err instanceof ApiError ? err.message : "Login failed. Please try again.";
-      setError(message);
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  },
-  [loginRequest, navigate]
-);
+        setUser(data.user);
+        setTokens(newTokens);
+
+        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(data.user));
+        localStorage.setItem(TOKENS_STORAGE_KEY, JSON.stringify(newTokens));
+
+        navigate("/dashboard");
+        return true;
+      } catch (err) {
+        const message =
+          err instanceof ApiError ? err.message : "Login failed. Please try again.";
+        setError(message);
+        return false;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [loginRequest, navigate]
+  );
 
   const logout = useCallback(() => {
     setUser(null);
@@ -106,7 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         user,
         tokens,
-        isAuthenticated: !!user,
+        isAuthenticated: !!user && !!tokens,
         isLoading,
         error,
         login,

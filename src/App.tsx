@@ -1,5 +1,3 @@
-
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import EmployerSearch from "./pages/EmployerSearch";
 import DashboardLayout from "./pages/DashboardLayout";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import CompanyManagement from "./pages/dashboard/CompanyManagement";
@@ -49,6 +46,7 @@ const App = () => (
               <Route path="users" element={<UserManagement />} />
             </Route>
             <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

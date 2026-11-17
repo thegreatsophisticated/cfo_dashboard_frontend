@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Loader2, Calendar } from "lucide-react";
@@ -61,13 +62,28 @@ function StatementRow({
 export function ConsolidatedBalance() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const dateString = format(selectedDate, "yyyy-MM-dd");
   const { data, isLoading, error } = useGlobalBalanceSheet(dateString);
 
-  const handleExportPDF = () => {
-    // TODO: Implement PDF export
-    console.log("Export PDF clicked");
+  const handleExportPDF = async () => {
+    if (!data?.summary) return;
+
+    setIsExporting(true);
+    try {
+      // Load the PDF library only when needed
+      const { exportBalanceSheetPDF } = await import(
+        "@/lib/export-balance-pdf"
+      );
+      exportBalanceSheetPDF(selectedDate, data.summary, data.companies ?? []);
+      toast.success("PDF exported successfully");
+    } catch (err) {
+      console.error("PDF export failed:", err);
+      toast.error("Failed to export PDF. Please try again.");
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   if (isLoading) {
@@ -163,12 +179,17 @@ export function ConsolidatedBalance() {
           </Popover>
           <Button
             onClick={handleExportPDF}
+            disabled={isExporting}
             variant="outline"
             size="sm"
             className="h-7 text-[11px] px-2"
           >
-            <FileText className="h-3 w-3 mr-1" />
-            Export PDF
+            {isExporting ? (
+              <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+            ) : (
+              <FileText className="h-3 w-3 mr-1" />
+            )}
+            {isExporting ? "Exporting..." : "Export PDF"}
           </Button>
         </div>
       </CardHeader>

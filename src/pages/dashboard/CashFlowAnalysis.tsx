@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -83,6 +84,7 @@ function CashFlowAnalysis() {
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [isStartCalendarOpen, setIsStartCalendarOpen] = useState(false);
   const [isEndCalendarOpen, setIsEndCalendarOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const startDateString = format(startDate, "yyyy-MM-dd");
   const endDateString = format(endDate, "yyyy-MM-dd");
@@ -92,9 +94,21 @@ function CashFlowAnalysis() {
     endDateString,
   );
 
-  const handleExportPDF = () => {
-    // TODO: Implement PDF export
-    console.log("Export PDF clicked");
+  const handleExportPDF = async () => {
+    if (!data?.summary || !data.data) return;
+
+    setIsExporting(true);
+    try {
+      // Load the PDF library only when needed
+      const { exportCashFlowPDF } = await import("@/lib/export-cashflow-pdf");
+      exportCashFlowPDF(startDate, endDate, data.summary, data.data);
+      toast.success("PDF exported successfully");
+    } catch (err) {
+      console.error("PDF export failed:", err);
+      toast.error("Failed to export PDF. Please try again.");
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   if (isLoading) {
@@ -215,11 +229,16 @@ function CashFlowAnalysis() {
 
               <Button
                 onClick={handleExportPDF}
+                disabled={isExporting}
                 size="sm"
                 className="h-7 text-[11px] px-2"
               >
-                <FileText className="h-3 w-3 mr-1" />
-                Export PDF
+                {isExporting ? (
+                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                ) : (
+                  <FileText className="h-3 w-3 mr-1" />
+                )}
+                {isExporting ? "Exporting..." : "Export PDF"}
               </Button>
             </div>
           </div>

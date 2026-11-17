@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Loader2 } from "lucide-react";
@@ -62,6 +63,7 @@ export function ConsolidatedIncome() {
   const [selectedYear, setSelectedYear] = useState<number>(
     new Date().getFullYear(),
   );
+  const [isExporting, setIsExporting] = useState(false);
 
   const yearOptions = Array.from(
     { length: 6 },
@@ -70,9 +72,23 @@ export function ConsolidatedIncome() {
 
   const { data, isLoading, error } = useGlobalIncomeStatement(selectedYear);
 
-  const handleExportPDF = () => {
-    // TODO: Implement PDF export
-    console.log("Export PDF clicked");
+  const handleExportPDF = async () => {
+    if (!data?.summary) return;
+
+    setIsExporting(true);
+    try {
+      // Load the PDF library only when needed
+      const { exportIncomeStatementPDF } = await import(
+        "@/lib/export-income-pdf"
+      );
+      exportIncomeStatementPDF(selectedYear, data.summary, data.companies ?? []);
+      toast.success("PDF exported successfully");
+    } catch (err) {
+      console.error("PDF export failed:", err);
+      toast.error("Failed to export PDF. Please try again.");
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   if (isLoading) {
@@ -161,12 +177,17 @@ export function ConsolidatedIncome() {
           </Select>
           <Button
             onClick={handleExportPDF}
+            disabled={isExporting}
             size="sm"
             variant="outline"
             className="h-7 text-[11px] px-2"
           >
-            <FileText className="h-3 w-3 mr-1" />
-            Export PDF
+            {isExporting ? (
+              <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+            ) : (
+              <FileText className="h-3 w-3 mr-1" />
+            )}
+            {isExporting ? "Exporting..." : "Export PDF"}
           </Button>
         </div>
       </CardHeader>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Collapsible,
@@ -50,30 +49,35 @@ import {
   Loader2,
   MoreVertical,
   Trash2,
-  RotateCcw,
+  Pencil,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import {
+  CATEGORY_TYPES,
   useMainCategories,
   useSubCategories,
-  useCreateCategory,
+  useSubSubCategories,
+  useNextCategoryCode,
+  useNextMainCode,
+  useCreateMainCategory,
+  useCreateSubCategory,
+  useCreateSubSubCategory,
+  useUpdateCategory,
   useDeleteCategory,
-  useRestoreCategory,
-  fetchSubCategoriesDirect,
-  fetchSubSubCategoriesDirect,
   type Category,
   type CategoryLevel,
   type CategoryType,
-  type CreateCategoryDto,
+  type UpdateCategoryDto,
 } from "@/hooks/use-categories";
 
 const categoryTypeColors: Record<string, string> = {
   asset: "bg-blue-100 text-blue-800 border-blue-200",
   liability: "bg-red-100 text-red-800 border-red-200",
   equity: "bg-green-100 text-green-800 border-green-200",
-  income: "bg-emerald-100 text-emerald-800 border-emerald-200",
+  revenue: "bg-emerald-100 text-emerald-800 border-emerald-200",
   expense: "bg-orange-100 text-orange-800 border-orange-200",
+  cost_of_sales: "bg-amber-100 text-amber-800 border-amber-200",
 };
 
 const categoryLevelIcons: Record<CategoryLevel, React.ReactNode> = {
@@ -82,6 +86,657 @@ const categoryLevelIcons: Record<CategoryLevel, React.ReactNode> = {
   sub_sub: <Tag className="h-3 w-3" />,
 };
 
+const levelLabel: Record<CategoryLevel, string> = {
+  main: "Main category",
+  sub: "Sub category",
+  sub_sub: "Sub-sub category",
+};
+
+function Warning({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-[10px] text-amber-800">
+      {children}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Create dialog
+//  - fixedParent set   → "Add sub / sub-sub under this category"
+//  - fixedParent unset → toolbar mode, pick level + parents
+// Mounted only while open, so its state is always fresh.
+// The code input is auto-filled with the next free code.
+// ─────────────────────────────────────────────────────────────
+function CategoryFormDialog({
+  fixedParent,
+  onClose,
+  onCreated,
+}: {
+  fixedParent?: Category;
+  onClose: () => void;
+  onCreated?: () => void;
+}) {
+  const [pickedLevel, setPickedLevel] = useState<CategoryLevel>("main");
+  const [mainId, setMainId] = useState<number | null>(null);
+  const [subId, setSubId] = useState<number | null>(null);
+  const [code, setCode] = useState("");
+  const [codeTouched, setCodeTouched] = useState(false);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
+  const [categoryType, setCategoryType] = useState<CategoryType>("asset");
+
+  const level: CategoryLevel = fixedParent
+    ? fixedParent.level === "main"
+      ? "sub"
+      : "sub_sub"
+    : pickedLevel;
+  const isMain = level === "main";
+
+  const parentId = fixedParent
+    ? fixedParent.id
+    : level === "sub"
+      ? mainId
+      : level === "sub_sub"
+        ? subId
+        : null;
+
+  // Parent pickers (toolbar mode): active parents only
+  const { data: mainCategories } = useMainCategories();
+  const { data: pickerSubCategories } = useSubCategories(
+    mainId,
+    !fixedParent && level === "sub_sub",
+  );
+
+  // All main categories incl. inactive, to list existing main codes
+  const { data: allMains } = useMainCategories(true);
+
+  // Suggested code for sub / sub-sub (by parent)
+  const { data: nextChild, isFetching: childFetching } = useNextCategoryCode(
+    isMain ? null : parentId,
+  );
+
+  // Suggested code for main (by type)
+  const {
+    data: nextMain,
+    isFetching: mainFetching,
+    isError: mainError,
+  } = useNextMainCode(isMain ? categoryType : null);
+
+  // Fallback when the endpoint fails: highest main code of this type + 1,
+  // computed from the list already loaded (the server still validates it)
+  const localMainSuggestion = useMemo(() => {
+    const codes = (allMains ?? [])
+      .filter((c) => c.categoryType === categoryType)
+      .map((c) => parseInt(c.code ?? "", 10))
+      .filter((n) => !isNaN(n));
+    return codes.length ? String(Math.max(...codes) + 1) : undefined;
+  }, [allMains, categoryType]);
+
+  const suggestedCode = isMain
+    ? (nextMain?.nextCode ?? (mainError ? localMainSuggestion : undefined))
+    : nextChild?.nextCode;
+  const suggestFetching = isMain ? mainFetching : childFetching;
+  const canSuggest = isMain || !!parentId;
+
+  // Existing siblings (incl. inactive), so the user sees what the
+  // suggestion is based on
+  const { data: siblingSubs } = useSubCategories(
+    level === "sub" ? parentId : null,
+    true,
+    true,
+  );
+  const { data: siblingSubSubs } = useSubSubCategories(
+    level === "sub_sub" ? parentId : null,
+    true,
+    true,
+  );
+  const siblingCodes = (
+    isMain
+      ? allMains?.filter((c) => c.categoryType === categoryType)
+      : level === "sub"
+        ? siblingSubs
+        : siblingSubSubs
+  )
+    ?.map((c) => c.code)
+    .filter(Boolean);
+
+  // 1) Level, parent or main-type changed → clear and allow auto-fill again
+  useEffect(() => {
+    setCode("");
+    setCodeTouched(false);
+  }, [level, parentId, categoryType]);
+
+  // 2) Fill with the suggestion once loaded, unless the user typed
+  useEffect(() => {
+    if (codeTouched || suggestFetching || !suggestedCode) return;
+    setCode(suggestedCode);
+  }, [level, parentId, codeTouched, suggestFetching, suggestedCode]);
+
+  const createMain = useCreateMainCategory();
+  const createSub = useCreateSubCategory();
+  const createSubSub = useCreateSubSubCategory();
+  const isPending =
+    createMain.isPending || createSub.isPending || createSubSub.isPending;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const base = {
+      name: name.trim(),
+      description: description.trim() || undefined,
+      sortOrder: sortOrder === "" ? undefined : Number(sortOrder),
+    };
+    // blank → backend auto-generates (sub / sub-sub)
+    const trimmedCode = code.trim() || undefined;
+
+    const options = {
+      onSuccess: () => {
+        toast.success(`${levelLabel[level]} created`);
+        onCreated?.();
+        onClose();
+      },
+      onError: (error: Error) =>
+        toast.error(error.message || "Failed to create category"),
+    };
+
+    if (level === "main") {
+      createMain.mutate(
+        { ...base, code: trimmedCode as string, categoryType },
+        options,
+      );
+    } else if (level === "sub") {
+      createSub.mutate(
+        { ...base, code: trimmedCode, mainCategoryId: parentId as number },
+        options,
+      );
+    } else {
+      createSubSub.mutate(
+        { ...base, code: trimmedCode, subCategoryId: parentId as number },
+        options,
+      );
+    }
+  };
+
+  const canSubmit =
+    !isPending &&
+    name.trim().length >= 2 &&
+    (isMain ? !!code.trim() : !!parentId);
+
+  return (
+    <Dialog open onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="text-sm">
+            {fixedParent
+              ? `Add ${levelLabel[level].toLowerCase()} under ${fixedParent.name}`
+              : "Create New Category"}
+          </DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-2.5">
+          {!fixedParent && (
+            <>
+              <div className="space-y-1">
+                <Label className="text-[11px]">Level</Label>
+                <Select
+                  value={pickedLevel}
+                  onValueChange={(v) => {
+                    setPickedLevel(v as CategoryLevel);
+                    setMainId(null);
+                    setSubId(null);
+                  }}
+                >
+                  <SelectTrigger className="h-7 text-[11px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="main" className="text-[11px]">
+                      Main Category
+                    </SelectItem>
+                    <SelectItem value="sub" className="text-[11px]">
+                      Sub Category
+                    </SelectItem>
+                    <SelectItem value="sub_sub" className="text-[11px]">
+                      Sub-Sub Category
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {!isMain && (
+                <div className="space-y-1">
+                  <Label className="text-[11px]">Parent main category</Label>
+                  <Select
+                    value={mainId?.toString() ?? ""}
+                    onValueChange={(v) => {
+                      setMainId(parseInt(v));
+                      setSubId(null);
+                    }}
+                  >
+                    <SelectTrigger className="h-7 text-[11px]">
+                      <SelectValue placeholder="Select main category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {mainCategories?.map((cat) => (
+                        <SelectItem
+                          key={cat.id}
+                          value={cat.id.toString()}
+                          className="text-[11px]"
+                        >
+                          {cat.code} - {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {level === "sub_sub" && mainId && (
+                <div className="space-y-1">
+                  <Label className="text-[11px]">Parent sub category</Label>
+                  <Select
+                    value={subId?.toString() ?? ""}
+                    onValueChange={(v) => setSubId(parseInt(v))}
+                  >
+                    <SelectTrigger className="h-7 text-[11px]">
+                      <SelectValue placeholder="Select sub category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {pickerSubCategories?.map((cat) => (
+                        <SelectItem
+                          key={cat.id}
+                          value={cat.id.toString()}
+                          className="text-[11px]"
+                        >
+                          {cat.code} - {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </>
+          )}
+
+          {fixedParent && (
+            <p className="text-[10px] text-muted-foreground">
+              Parent: {fixedParent.code} - {fixedParent.name}. The category type
+              is inherited from the parent.
+            </p>
+          )}
+
+          {isMain && (
+            <div className="space-y-1">
+              <Label className="text-[11px]">Category type</Label>
+              <Select
+                value={categoryType}
+                onValueChange={(v) => setCategoryType(v as CategoryType)}
+              >
+                <SelectTrigger className="h-7 text-[11px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CATEGORY_TYPES.map((t) => (
+                    <SelectItem
+                      key={t.value}
+                      value={t.value}
+                      className="text-[11px]"
+                    >
+                      {t.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-2.5">
+            <div className="space-y-1">
+              <Label htmlFor="code" className="text-[11px]">
+                Code (auto-suggested)
+              </Label>
+              <div className="relative">
+                <Input
+                  id="code"
+                  value={code}
+                  onChange={(e) => {
+                    setCode(e.target.value.replace(/\D/g, ""));
+                    setCodeTouched(true);
+                  }}
+                  placeholder={
+                    !canSuggest
+                      ? "Select parent first"
+                      : suggestFetching
+                        ? "Generating..."
+                        : "Enter a code"
+                  }
+                  className="h-7 text-[11px] pr-7"
+                  required={isMain}
+                />
+                {suggestFetching && canSuggest && (
+                  <Loader2 className="absolute right-2 top-1.5 h-3 w-3 animate-spin text-muted-foreground" />
+                )}
+              </div>
+
+              {suggestedCode && code !== suggestedCode && (
+                <button
+                  type="button"
+                  className="text-[10px] text-primary hover:underline"
+                  onClick={() => {
+                    setCode(suggestedCode);
+                    setCodeTouched(false);
+                  }}
+                >
+                  Use suggested: {suggestedCode}
+                </button>
+              )}
+
+              {!!siblingCodes?.length && (
+                <p className="text-[10px] text-muted-foreground">
+                  Existing{isMain ? ` ${categoryType.replace("_", " ")}` : ""}:{" "}
+                  {siblingCodes.join(", ")}
+                </p>
+              )}
+
+              {isMain && mainError && (
+                <p className="text-[10px] text-amber-700">
+                  Couldn't load the server suggestion; showing a local
+                  estimate.
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="sortOrder" className="text-[11px]">
+                Sort order (optional)
+              </Label>
+              <Input
+                id="sortOrder"
+                type="number"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                placeholder="Defaults to code"
+                className="h-7 text-[11px]"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="name" className="text-[11px]">
+              Name
+            </Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Category name"
+              className="h-7 text-[11px]"
+              required
+            />
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="description" className="text-[11px]">
+              Description
+            </Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Optional description"
+              rows={2}
+              className="text-[11px]"
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2.5">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-7 px-2.5"
+              onClick={onClose}
+            >
+              <span className="text-[11px]">Cancel</span>
+            </Button>
+            <Button
+              type="submit"
+              size="sm"
+              className="h-7 px-2.5"
+              disabled={!canSubmit}
+            >
+              {isPending && <Loader2 className="h-3 w-3 mr-1 animate-spin" />}
+              <span className="text-[11px]">Create</span>
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Edit dialog (main / sub / sub-sub)
+// ─────────────────────────────────────────────────────────────
+function EditCategoryDialog({
+  category,
+  onClose,
+}: {
+  category: Category;
+  onClose: () => void;
+}) {
+  const [name, setName] = useState(category.name);
+  const [description, setDescription] = useState(category.description ?? "");
+  const [code, setCode] = useState(category.code ?? "");
+  const [sortOrder, setSortOrder] = useState(String(category.sortOrder));
+  const [categoryType, setCategoryType] = useState<CategoryType | null>(
+    category.categoryType,
+  );
+  const [isActive, setIsActive] = useState(category.isActive);
+
+  const updateMutation = useUpdateCategory();
+
+  const hasChildren = category.level !== "sub_sub";
+  const codeChanged = code.trim() !== "" && code.trim() !== category.code;
+  const typeChanged =
+    category.level === "main" &&
+    categoryType !== null &&
+    categoryType !== category.categoryType;
+  const deactivating = category.isActive && !isActive;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Send only what actually changed
+    const dto: UpdateCategoryDto = {};
+    if (name.trim() !== category.name) dto.name = name.trim();
+    if (description.trim() !== (category.description ?? ""))
+      dto.description = description.trim();
+    if (codeChanged) dto.code = code.trim();
+    if (sortOrder !== "" && Number(sortOrder) !== category.sortOrder)
+      dto.sortOrder = Number(sortOrder);
+    if (typeChanged && categoryType) dto.categoryType = categoryType;
+    if (isActive !== category.isActive) dto.isActive = isActive;
+
+    if (Object.keys(dto).length === 0) {
+      toast.info("No changes to save");
+      onClose();
+      return;
+    }
+
+    updateMutation.mutate(
+      { id: category.id, data: dto },
+      {
+        onSuccess: () => {
+          toast.success("Category updated");
+          onClose();
+        },
+        onError: (error: Error) =>
+          toast.error(error.message || "Failed to update category"),
+      },
+    );
+  };
+
+  return (
+    <Dialog open onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="text-sm">
+            Edit {levelLabel[category.level].toLowerCase()}
+          </DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-2.5">
+          <div className="grid grid-cols-2 gap-2.5">
+            <div className="space-y-1">
+              <Label htmlFor="edit-code" className="text-[11px]">
+                Code
+              </Label>
+              <Input
+                id="edit-code"
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+                className="h-7 text-[11px]"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="edit-sort" className="text-[11px]">
+                Sort order
+              </Label>
+              <Input
+                id="edit-sort"
+                type="number"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                className="h-7 text-[11px]"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="edit-name" className="text-[11px]">
+              Name
+            </Label>
+            <Input
+              id="edit-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="h-7 text-[11px]"
+              required
+            />
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="edit-desc" className="text-[11px]">
+              Description
+            </Label>
+            <Textarea
+              id="edit-desc"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={2}
+              className="text-[11px]"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-2.5">
+            {category.level === "main" && (
+              <div className="space-y-1">
+                <Label className="text-[11px]">Category type</Label>
+                <Select
+                  value={categoryType ?? ""}
+                  onValueChange={(v) => setCategoryType(v as CategoryType)}
+                >
+                  <SelectTrigger className="h-7 text-[11px]">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CATEGORY_TYPES.map((t) => (
+                      <SelectItem
+                        key={t.value}
+                        value={t.value}
+                        className="text-[11px]"
+                      >
+                        {t.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            <div className="space-y-1">
+              <Label className="text-[11px]">Status</Label>
+              <Select
+                value={isActive ? "active" : "inactive"}
+                onValueChange={(v) => setIsActive(v === "active")}
+              >
+                <SelectTrigger className="h-7 text-[11px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active" className="text-[11px]">
+                    Active
+                  </SelectItem>
+                  <SelectItem value="inactive" className="text-[11px]">
+                    Inactive
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {codeChanged && hasChildren && (
+            <Warning>
+              The codes of all sub-categories under this category will be
+              updated to match the new code.
+            </Warning>
+          )}
+          {typeChanged && (
+            <Warning>
+              This changes the type of every sub-category and will restate past
+              income statements and balance sheets.
+            </Warning>
+          )}
+          {deactivating && (
+            <Warning>
+              Inactive categories cannot be used for new transactions
+              {hasChildren && ", and all sub-categories will be deactivated too"}
+              .
+            </Warning>
+          )}
+
+          <div className="flex justify-end gap-2 pt-2.5">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-7 px-2.5"
+              onClick={onClose}
+            >
+              <span className="text-[11px]">Cancel</span>
+            </Button>
+            <Button
+              type="submit"
+              size="sm"
+              className="h-7 px-2.5"
+              disabled={updateMutation.isPending || name.trim().length < 2}
+            >
+              {updateMutation.isPending && (
+                <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+              )}
+              <span className="text-[11px]">Save changes</span>
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Tree row
+// ─────────────────────────────────────────────────────────────
 function CategoryItem({
   category,
   level = 0,
@@ -90,61 +745,49 @@ function CategoryItem({
   level?: number;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [subCategories, setSubCategories] = useState<Category[]>([]);
-  const [isLoadingSubs, setIsLoadingSubs] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [showAdd, setShowAdd] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
 
   const deleteMutation = useDeleteCategory();
-  const restoreMutation = useRestoreCategory();
 
-  const handleToggle = async () => {
-    if (!isOpen && subCategories.length === 0 && category.level !== "sub_sub") {
-      setIsLoadingSubs(true);
-      try {
-        const subs =
-          category.level === "main"
-            ? await fetchSubCategoriesDirect(category.id)
-            : await fetchSubSubCategoriesDirect(category.id);
-        setSubCategories(subs);
-      } catch (error) {
-        console.error("Error loading sub-categories:", error);
-      } finally {
-        setIsLoadingSubs(false);
-      }
-    }
-    setIsOpen(!isOpen);
-  };
+  const isMain = category.level === "main";
+  const isSub = category.level === "sub";
+  const hasChildren = category.level !== "sub_sub";
+
+  // Children come from react-query, so edits / adds / deletes refresh them
+  const subsQuery = useSubCategories(isMain ? category.id : null, isOpen, true);
+  const subSubsQuery = useSubSubCategories(
+    isSub ? category.id : null,
+    isOpen,
+    true,
+  );
+  const childQuery = isMain ? subsQuery : subSubsQuery;
+  const children = childQuery.data ?? [];
 
   const handleDelete = () => {
     deleteMutation.mutate(category.id, {
       onSuccess: () => {
-        toast.success("Category deleted successfully");
-        setShowDeleteDialog(false);
+        toast.success("Category deleted");
+        setShowDelete(false);
       },
-      onError: (error: Error) =>
-        toast.error(error.message || "Failed to delete category"),
+      onError: (error: Error) => {
+        toast.error(error.message || "Failed to delete category");
+        setShowDelete(false);
+      },
     });
   };
-
-  const handleRestore = () => {
-    restoreMutation.mutate(category.id, {
-      onSuccess: () => toast.success("Category restored successfully"),
-      onError: (error: Error) =>
-        toast.error(error.message || "Failed to restore category"),
-    });
-  };
-
-  const hasChildren = category.level !== "sub_sub";
 
   return (
     <div>
-      <Collapsible open={isOpen} onOpenChange={handleToggle}>
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <div className="flex items-center gap-1.5 group">
           <CollapsibleTrigger asChild>
             <button
               className={cn(
                 "flex-1 flex items-center gap-1.5 px-2.5 py-1.5 text-left hover:bg-muted/50 transition-colors rounded-md",
                 level > 0 && "ml-4",
+                !category.isActive && "opacity-60",
               )}
             >
               {hasChildren ? (
@@ -181,7 +824,7 @@ function CategoryItem({
                       categoryTypeColors[category.categoryType],
                     )}
                   >
-                    {category.categoryType}
+                    {category.categoryType.replace("_", " ")}
                   </Badge>
                 )}
                 {category.allowTransactions && (
@@ -203,47 +846,45 @@ function CategoryItem({
                 >
                   {category.isActive ? "Active" : "Inactive"}
                 </Badge>
-                {category.deletedAt && (
-                  <Badge
-                    variant="outline"
-                    className="text-[9px] h-4 px-1.5 bg-red-50 text-red-700 border-red-200"
-                  >
-                    Deleted
-                  </Badge>
-                )}
               </div>
             </button>
           </CollapsibleTrigger>
 
-          <DropdownMenu>
+          {/* modal={false} avoids the "frozen page" bug when a dialog opens from a menu item */}
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 focus:opacity-100 data-[state=open]:opacity-100 transition-opacity"
               >
                 <MoreVertical className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {category.deletedAt ? (
+              <DropdownMenuItem
+                onClick={() => setShowEdit(true)}
+                className="text-[11px]"
+              >
+                <Pencil className="h-3 w-3 mr-2" />
+                Edit
+              </DropdownMenuItem>
+              {hasChildren && (
                 <DropdownMenuItem
-                  onClick={handleRestore}
-                  disabled={restoreMutation.isPending}
+                  onClick={() => setShowAdd(true)}
                   className="text-[11px]"
                 >
-                  <RotateCcw className="h-3 w-3 mr-2" />
-                  {restoreMutation.isPending ? "Restoring..." : "Restore"}
-                </DropdownMenuItem>
-              ) : (
-                <DropdownMenuItem
-                  onClick={() => setShowDeleteDialog(true)}
-                  className="text-[11px] text-destructive focus:text-destructive"
-                >
-                  <Trash2 className="h-3 w-3 mr-2" />
-                  Delete
+                  <Plus className="h-3 w-3 mr-2" />
+                  {isMain ? "Add sub category" : "Add sub-sub category"}
                 </DropdownMenuItem>
               )}
+              <DropdownMenuItem
+                onClick={() => setShowDelete(true)}
+                className="text-[11px] text-destructive focus:text-destructive"
+              >
+                <Trash2 className="h-3 w-3 mr-2" />
+                Delete
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -258,33 +899,52 @@ function CategoryItem({
 
         {hasChildren && (
           <CollapsibleContent>
-            {isLoadingSubs ? (
+            {childQuery.isLoading ? (
               <div className="ml-7 py-1.5 flex items-center gap-2 text-muted-foreground">
                 <Loader2 className="h-3 w-3 animate-spin" />
                 <span className="text-[11px]">Loading...</span>
               </div>
-            ) : subCategories.length > 0 ? (
+            ) : children.length > 0 ? (
               <div className="border-l-2 border-muted ml-4">
-                {subCategories.map((sub) => (
-                  <CategoryItem key={sub.id} category={sub} level={level + 1} />
+                {children.map((child) => (
+                  <CategoryItem
+                    key={child.id}
+                    category={child}
+                    level={level + 1}
+                  />
                 ))}
               </div>
             ) : (
               <div className="ml-7 py-1.5 text-[11px] text-muted-foreground">
-                No sub-categories
+                No {isMain ? "sub-categories" : "sub-sub categories"} yet
               </div>
             )}
           </CollapsibleContent>
         )}
       </Collapsible>
 
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      {showEdit && (
+        <EditCategoryDialog
+          category={category}
+          onClose={() => setShowEdit(false)}
+        />
+      )}
+
+      {showAdd && (
+        <CategoryFormDialog
+          fixedParent={category}
+          onClose={() => setShowAdd(false)}
+          onCreated={() => setIsOpen(true)}
+        />
+      )}
+
+      <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Category</AlertDialogTitle>
+            <AlertDialogTitle>Delete category</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{category.name}"? This action can
-              be undone by restoring the category later.
+              Delete "{category.name}"? Categories that have sub-categories or
+              transactions can't be deleted; deactivate them instead.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -306,289 +966,42 @@ function CategoryItem({
   );
 }
 
-function CreateCategoryDialog() {
-  const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState<CreateCategoryDto>({
-    code: "",
-    name: "",
-    description: "",
-    level: "main",
-    categoryType: null,
-    sortOrder: 0,
-  });
-
-  const { data: mainCategories } = useMainCategories();
-
-  const [selectedMainId, setSelectedMainId] = useState<number | null>(null);
-  const { data: subCategories } = useSubCategories(
-    selectedMainId,
-    formData.level === "sub_sub",
-  );
-
-  const createMutation = useCreateCategory();
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    createMutation.mutate(formData, {
-      onSuccess: () => {
-        toast.success("Category created successfully");
-        setOpen(false);
-        setFormData({
-          code: "",
-          name: "",
-          description: "",
-          level: "main",
-          categoryType: null,
-          sortOrder: 0,
-        });
-        setSelectedMainId(null);
-      },
-      onError: (error: Error) =>
-        toast.error(error.message || "Failed to create category"),
-    });
-  };
-
+// ─────────────────────────────────────────────────────────────
+// Page
+// ─────────────────────────────────────────────────────────────
+function StatCard({
+  icon,
+  tint,
+  value,
+  label,
+}: {
+  icon: React.ReactNode;
+  tint: string;
+  value: number;
+  label: string;
+}) {
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm" className="h-7 px-2.5">
-          <Plus className="h-3 w-3 mr-1" />
-          <span className="text-[11px]">Add Category</span>
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="text-sm">Create New Category</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-2.5">
-          <div className="grid grid-cols-2 gap-2.5">
-            <div className="space-y-1">
-              <Label htmlFor="level" className="text-[11px]">
-                Level
-              </Label>
-              <Select
-                value={formData.level}
-                onValueChange={(value) => {
-                  setFormData({
-                    ...formData,
-                    level: value as CategoryLevel,
-                    parentId: undefined,
-                  });
-                  setSelectedMainId(null);
-                }}
-              >
-                <SelectTrigger className="h-7 text-[11px]">
-                  <SelectValue placeholder="Select level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="main" className="text-[11px]">
-                    Main Category
-                  </SelectItem>
-                  <SelectItem value="sub" className="text-[11px]">
-                    Sub Category
-                  </SelectItem>
-                  <SelectItem value="sub_sub" className="text-[11px]">
-                    Sub-Sub Category
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="categoryType" className="text-[11px]">
-                Category Type
-              </Label>
-              <Select
-                value={formData.categoryType || ""}
-                onValueChange={(value) =>
-                  setFormData({
-                    ...formData,
-                    categoryType: (value || null) as CategoryType,
-                  })
-                }
-              >
-                <SelectTrigger className="h-7 text-[11px]">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="asset" className="text-[11px]">
-                    Asset
-                  </SelectItem>
-                  <SelectItem value="liability" className="text-[11px]">
-                    Liability
-                  </SelectItem>
-                  <SelectItem value="equity" className="text-[11px]">
-                    Equity
-                  </SelectItem>
-                  <SelectItem value="income" className="text-[11px]">
-                    Income
-                  </SelectItem>
-                  <SelectItem value="expense" className="text-[11px]">
-                    Expense
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+    <Card>
+      <CardContent className="pt-3 pb-2.5 px-3">
+        <div className="flex items-center gap-2">
+          <div className={cn("p-1.5 rounded-md", tint)}>{icon}</div>
+          <div>
+            <p className="text-base font-bold">{value}</p>
+            <p className="text-[9px] text-muted-foreground">{label}</p>
           </div>
-
-          {formData.level !== "main" && (
-            <div className="space-y-1">
-              <Label className="text-[11px]">Parent Main Category</Label>
-              <Select
-                value={selectedMainId?.toString() || ""}
-                onValueChange={(value) => {
-                  const id = parseInt(value);
-                  setSelectedMainId(id);
-                  if (formData.level === "sub") {
-                    setFormData({ ...formData, parentId: id });
-                  }
-                }}
-              >
-                <SelectTrigger className="h-7 text-[11px]">
-                  <SelectValue placeholder="Select main category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {mainCategories?.map((cat) => (
-                    <SelectItem
-                      key={cat.id}
-                      value={cat.id.toString()}
-                      className="text-[11px]"
-                    >
-                      {cat.code ? `${cat.code} - ` : ""}
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {formData.level === "sub_sub" && selectedMainId && (
-            <div className="space-y-1">
-              <Label className="text-[11px]">Parent Sub Category</Label>
-              <Select
-                value={formData.parentId?.toString() || ""}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, parentId: parseInt(value) })
-                }
-              >
-                <SelectTrigger className="h-7 text-[11px]">
-                  <SelectValue placeholder="Select sub category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {subCategories?.map((cat) => (
-                    <SelectItem
-                      key={cat.id}
-                      value={cat.id.toString()}
-                      className="text-[11px]"
-                    >
-                      {cat.code ? `${cat.code} - ` : ""}
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-2.5">
-            <div className="space-y-1">
-              <Label htmlFor="code" className="text-[11px]">
-                Code
-              </Label>
-              <Input
-                id="code"
-                value={formData.code}
-                onChange={(e) =>
-                  setFormData({ ...formData, code: e.target.value })
-                }
-                placeholder="e.g., 101"
-                className="h-7 text-[11px]"
-                required
-              />
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="sortOrder" className="text-[11px]">
-                Sort Order
-              </Label>
-              <Input
-                id="sortOrder"
-                type="number"
-                value={formData.sortOrder}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    sortOrder: parseInt(e.target.value) || 0,
-                  })
-                }
-                className="h-7 text-[11px]"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="name" className="text-[11px]">
-              Name
-            </Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              placeholder="Category name"
-              className="h-7 text-[11px]"
-              required
-            />
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="description" className="text-[11px]">
-              Description
-            </Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              placeholder="Optional description"
-              rows={2}
-              className="text-[11px]"
-            />
-          </div>
-
-          <div className="flex justify-end gap-2 pt-2.5">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="h-7 px-2.5"
-              onClick={() => setOpen(false)}
-            >
-              <span className="text-[11px]">Cancel</span>
-            </Button>
-            <Button
-              type="submit"
-              size="sm"
-              className="h-7 px-2.5"
-              disabled={createMutation.isPending}
-            >
-              {createMutation.isPending && (
-                <Loader2 className="h-3 w-3 mr-1" />
-              )}
-              <span className="text-[11px]">Create Category</span>
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
 function CategoryManagement() {
-  const { data: mainCategories, isLoading, error } = useMainCategories();
+  const [showCreate, setShowCreate] = useState(false);
+  // include inactive so deactivated categories can be found and reactivated
+  const { data: mainCategories, isLoading, error } = useMainCategories(true);
+
+  const countType = (t: CategoryType) =>
+    mainCategories?.filter((c) => c.categoryType === t).length ?? 0;
 
   return (
     <div className="space-y-3">
@@ -599,75 +1012,41 @@ function CategoryManagement() {
             Manage your chart of accounts hierarchy
           </p>
         </div>
-        <CreateCategoryDialog />
+        <Button
+          size="sm"
+          className="h-7 px-2.5"
+          onClick={() => setShowCreate(true)}
+        >
+          <Plus className="h-3 w-3 mr-1" />
+          <span className="text-[11px]">Add Category</span>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-2.5">
-        <Card>
-          <CardContent className="pt-3 pb-2.5 px-3">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-primary/10 rounded-md">
-                <FolderTree className="h-3.5 w-3.5 text-primary" />
-              </div>
-              <div>
-                <p className="text-base font-bold">
-                  {mainCategories?.length || 0}
-                </p>
-                <p className="text-[9px] text-muted-foreground">
-                  Main Categories
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-3 pb-2.5 px-3">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-blue-100 rounded-md">
-                <Tag className="h-3.5 w-3.5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-base font-bold">
-                  {mainCategories?.filter((c) => c.categoryType === "asset")
-                    .length || 0}
-                </p>
-                <p className="text-[9px] text-muted-foreground">Assets</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-3 pb-2.5 px-3">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-emerald-100 rounded-md">
-                <Tag className="h-3.5 w-3.5 text-emerald-600" />
-              </div>
-              <div>
-                <p className="text-base font-bold">
-                  {mainCategories?.filter((c) => c.categoryType === "income")
-                    .length || 0}
-                </p>
-                <p className="text-[9px] text-muted-foreground">Income</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-3 pb-2.5 px-3">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-orange-100 rounded-md">
-                <Tag className="h-3.5 w-3.5 text-orange-600" />
-              </div>
-              <div>
-                <p className="text-base font-bold">
-                  {mainCategories?.filter((c) => c.categoryType === "expense")
-                    .length || 0}
-                </p>
-                <p className="text-[9px] text-muted-foreground">Expenses</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <StatCard
+          icon={<FolderTree className="h-3.5 w-3.5 text-primary" />}
+          tint="bg-primary/10"
+          value={mainCategories?.length ?? 0}
+          label="Main Categories"
+        />
+        <StatCard
+          icon={<Tag className="h-3.5 w-3.5 text-blue-600" />}
+          tint="bg-blue-100"
+          value={countType("asset")}
+          label="Assets"
+        />
+        <StatCard
+          icon={<Tag className="h-3.5 w-3.5 text-emerald-600" />}
+          tint="bg-emerald-100"
+          value={countType("revenue")}
+          label="Revenue"
+        />
+        <StatCard
+          icon={<Tag className="h-3.5 w-3.5 text-orange-600" />}
+          tint="bg-orange-100"
+          value={countType("expense")}
+          label="Expenses"
+        />
       </div>
 
       <Card>
@@ -703,6 +1082,8 @@ function CategoryManagement() {
           )}
         </CardContent>
       </Card>
+
+      {showCreate && <CategoryFormDialog onClose={() => setShowCreate(false)} />}
     </div>
   );
 }
