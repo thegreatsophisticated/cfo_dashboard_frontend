@@ -132,6 +132,9 @@ export function ConsolidatedBalance() {
   const { summary, companies } = data;
   const hasDetailedData = companies && companies.length > 0;
 
+  // Assets are always displayed as a positive value
+  const displayTotalAssets = Math.abs(summary.totalAssets);
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-start justify-between pb-2 pt-3 px-3">
@@ -201,7 +204,7 @@ export function ConsolidatedBalance() {
               Total Assets
             </p>
             <p className="text-sm font-bold tabular-nums text-green-600 dark:text-green-400">
-              RWF {summary.totalAssets.toLocaleString()}
+              RWF {displayTotalAssets.toLocaleString()}
             </p>
           </div>
 
@@ -248,8 +251,9 @@ export function ConsolidatedBalance() {
             </span>
           </div>
           <p className="text-[9px] text-muted-foreground mt-0.5">
-            Assets = Liabilities ({summary.totalLiabilities.toLocaleString()}) +
-            Equity ({summary.totalEquity.toLocaleString()})
+            Assets ({displayTotalAssets.toLocaleString()}) = Liabilities (
+            {summary.totalLiabilities.toLocaleString()}) + Equity (
+            {summary.totalEquity.toLocaleString()})
           </p>
         </div>
 
@@ -264,7 +268,7 @@ export function ConsolidatedBalance() {
                 <StatementRow
                   key={`asset-${idx}`}
                   label={company.companyName}
-                  amount={company.totalAssets}
+                  amount={Math.abs(company.totalAssets)}
                   variant="indent"
                 />
               ))
@@ -275,7 +279,7 @@ export function ConsolidatedBalance() {
             )}
             <StatementRow
               label="Total Assets"
-              amount={summary.totalAssets}
+              amount={displayTotalAssets}
               variant="total"
             />
           </div>

@@ -23,7 +23,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { format, subDays } from "date-fns";
+import { format, parseISO, subDays } from "date-fns";
 import { useGlobalCashBook } from "@/hooks/use-global-reports";
 
 function formatCurrency(amount: number): string {
@@ -32,11 +32,13 @@ function formatCurrency(amount: number): string {
 
 function StatementRow({
   label,
+  sublabel,
   amount,
   variant = "normal",
   isNegative = false,
 }: {
   label: string;
+  sublabel?: string;
   amount?: number | string;
   variant?:
     | "normal"
@@ -48,7 +50,7 @@ function StatementRow({
   isNegative?: boolean;
 }) {
   const baseStyles =
-    "flex justify-between py-1.5 px-3 border-b border-border text-xs";
+    "flex justify-between items-center py-1.5 px-3 border-b border-border text-xs";
   const variantStyles = {
     normal: "",
     indent: "pl-8",
@@ -67,7 +69,20 @@ function StatementRow({
 
   return (
     <div className={`${baseStyles} ${variantStyles[variant]}`}>
-      <span>{label}</span>
+      <div className="flex flex-col">
+        <span>{label}</span>
+        {sublabel && (
+          <span
+            className={`text-[10px] font-normal ${
+              variant === "grand-total"
+                ? "text-primary-foreground/80"
+                : "text-muted-foreground"
+            }`}
+          >
+            {sublabel}
+          </span>
+        )}
+      </div>
       {amount !== undefined && (
         <span
           className={`font-semibold tabular-nums text-xs ${isNegative ? "text-red-600 dark:text-red-400" : ""}`}
@@ -76,6 +91,84 @@ function StatementRow({
         </span>
       )}
     </div>
+  );
+}
+
+type StatementLine = {
+  id: number;
+  date: string;
+  description: string;
+  counterparty?: string | null;
+  referenceNumber?: string | null;
+  category?: string;
+  companyName?: string;
+  amount: number;
+};
+
+function SectionHeader({ title, count }: { title: string; count?: number }) {
+  return (
+    <div className="flex justify-between py-1.5 px-3 border-b border-border font-semibold text-[11px] text-primary bg-secondary mt-1">
+      <span>{title}</span>
+      {count !== undefined && (
+        <span className="text-[9px] font-normal text-muted-foreground">
+          {count} {count === 1 ? "transaction" : "transactions"}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function TransactionLines({
+  lines,
+  tone,
+}: {
+  lines: StatementLine[];
+  tone: "in" | "out";
+}) {
+  if (lines.length === 0) {
+    return (
+      <div className="py-1.5 pl-8 pr-3 border-b border-border text-[10px] text-muted-foreground">
+        No transactions in this period
+      </div>
+    );
+  }
+
+  const amountColor =
+    tone === "in"
+      ? "text-green-600 dark:text-green-400"
+      : "text-red-600 dark:text-red-400";
+
+  return (
+    <>
+      <div className="flex gap-3 py-1 pl-8 pr-3 border-b border-border text-[9px] uppercase tracking-wide text-muted-foreground font-medium">
+        <span className="w-[76px] shrink-0">Date</span>
+        <span className="flex-1">Description</span>
+        <span>Amount</span>
+      </div>
+      {lines.map((line) => (
+        <div
+          key={line.id}
+          className="flex items-start gap-3 py-1.5 pl-8 pr-3 border-b border-border text-[10px]"
+        >
+          <span className="w-[76px] shrink-0 tabular-nums text-muted-foreground">
+            {format(parseISO(line.date), "dd MMM yyyy")}
+          </span>
+          <div className="flex-1 min-w-0">
+            <p className="truncate text-[11px] font-medium">
+              {line.description}
+            </p>
+            <p className="truncate text-muted-foreground">
+              {[line.companyName, line.counterparty, line.referenceNumber]
+                .filter(Boolean)
+                .join(" • ")}
+            </p>
+          </div>
+          <span className={`tabular-nums font-semibold ${amountColor}`}>
+            {formatCurrency(line.amount)}
+          </span>
+        </div>
+      ))}
+    </>
   );
 }
 
@@ -155,6 +248,15 @@ function CashFlowAnalysis() {
   }
 
   const { summary, data: companies, meta } = data;
+  // Individual transactions (with dates) for the Cash In / Cash Out sections
+  const statement = data.statement as
+    | { cashIn: StatementLine[]; cashOut: StatementLine[] }
+    | undefined;
+
+  // Period labels for the Consolidated Cash Flow Statement
+  const periodStart = new Date(summary.period.startDate);
+  const periodEnd = new Date(summary.period.endDate);
+  const periodRange = `${format(periodStart, "dd MMM yyyy")} - ${format(periodEnd, "dd MMM yyyy")}`;
 
   return (
     <div className="space-y-3">
@@ -505,22 +607,43 @@ function CashFlowAnalysis() {
           <CardTitle className="text-xs font-semibold">
             Consolidated Cash Flow Statement
           </CardTitle>
+          <p className="text-[10px] text-muted-foreground">
+            For the period {periodRange}
+          </p>
         </CardHeader>
         <CardContent className="pt-0 px-3 pb-3">
           <div className="border rounded-md overflow-hidden">
+            <SectionHeader
+              title="Cash Inflows"
+              count={statement?.cashIn.length}
+            />
+            {statement && (
+              <TransactionLines lines={statement.cashIn} tone="in" />
+            )}
             <StatementRow
               label="Total Cash Inflows"
+              sublabel={statement ? undefined : periodRange}
               amount={summary.totalCashIn}
-              variant="indent"
+              variant="total"
             />
+
+            <SectionHeader
+              title="Cash Outflows"
+              count={statement?.cashOut.length}
+            />
+            {statement && (
+              <TransactionLines lines={statement.cashOut} tone="out" />
+            )}
             <StatementRow
               label="Total Cash Outflows"
+              sublabel={statement ? undefined : periodRange}
               amount={summary.totalCashOut}
-              variant="indent"
+              variant="total"
               isNegative
             />
             <StatementRow
               label="Net Cash Flow"
+              sublabel={periodRange}
               amount={summary.netCashFlow}
               variant="grand-total"
               isNegative={summary.netCashFlow < 0}

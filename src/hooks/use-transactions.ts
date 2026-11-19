@@ -42,8 +42,49 @@ function sanitizeTransactionPayload<T extends Partial<CreateTransactionDto>>(dat
 // API CALLS
 // =====================================================
 
+// The backend paginates GET /transactions (default: page 1, 10 rows).
+// Previously this called the endpoint once with no params, so the UI only
+// ever received the first 10 rows. We now walk every page and merge them,
+// so the response keeps the same shape (`data` = all transactions) and
+// existing consumers of useTransactions() keep working.
+const FETCH_PAGE_SIZE = 50;
+const MAX_PAGES = 200; // safety stop
+
 async function fetchTransactions(): Promise<TransactionsApiResponse> {
-  return apiFetch<TransactionsApiResponse>("transactions");
+  const byId = new Map<number, Transaction>(); // de-dupe in case pages overlap
+  let first: TransactionsApiResponse | undefined;
+  let page = 1;
+
+  while (page <= MAX_PAGES) {
+    const res = await apiFetch<TransactionsApiResponse>(
+      `transactions?page=${page}&limit=${FETCH_PAGE_SIZE}`,
+    );
+    if (!first) first = res;
+
+    const rows = res?.data ?? [];
+    rows.forEach((t) => byId.set(t.id, t));
+
+    if (!res?.meta?.hasNextPage || rows.length === 0) break;
+    page += 1;
+  }
+
+  const data = Array.from(byId.values()).sort(
+    (a, b) => b.date.localeCompare(a.date) || b.id - a.id,
+  );
+
+  return {
+    status: first?.status ?? 200,
+    message: first?.message ?? "Transactions retrieved successfully",
+    data,
+    meta: {
+      total: data.length,
+      page: 1,
+      limit: data.length,
+      totalPages: 1,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    },
+  };
 }
 
 async function fetchTransactionById(id: number): Promise<Transaction> {

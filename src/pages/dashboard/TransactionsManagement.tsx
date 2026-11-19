@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Plus, FileText, Repeat, Loader2, Sparkles } from "lucide-react";
+import { Plus, FileText, Repeat, Loader2, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
@@ -45,6 +45,10 @@ function roundMoney(value: number): number {
   return Math.round(value * 100) / 100;
 }
 
+const PAGE_SIZE_OPTIONS = [10, 25, 50];
+
+type SortBy = "date" | "entered";
+
 export function TransactionsManagement() {
   const { user } = useAuth();
 
@@ -53,6 +57,11 @@ export function TransactionsManagement() {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [executingId, setExecutingId] = useState<number | null>(null);
+
+  // List pagination / sorting
+  const [listPage, setListPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [sortBy, setSortBy] = useState<SortBy>("date");
 
   const emptyFormData: Partial<CreateTransactionDto> = {
     companyId: undefined,
@@ -198,6 +207,28 @@ export function TransactionsManagement() {
   const recurringTransactions = transactions.filter((t) => t.isRecurring);
   const regularTransactions = transactions.filter((t) => !t.isRecurring);
 
+  // ── All Transactions tab: company filter → sort → paginate ──────────────
+  const listTransactions = React.useMemo(() => {
+    const filtered = selectedCompany
+      ? regularTransactions.filter((t) => t.company.id === selectedCompany)
+      : regularTransactions;
+
+    return [...filtered].sort((a, b) =>
+      sortBy === "entered"
+        ? new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime() || b.id - a.id
+        : b.date.localeCompare(a.date) || b.id - a.id,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transactions, selectedCompany, sortBy]);
+
+  const totalListItems = listTransactions.length;
+  const totalListPages = Math.max(1, Math.ceil(totalListItems / pageSize));
+  const currentListPage = Math.min(listPage, totalListPages);
+  const pageStartIndex = (currentListPage - 1) * pageSize;
+  const pagedTransactions = listTransactions.slice(pageStartIndex, pageStartIndex + pageSize);
+  const showingFrom = totalListItems === 0 ? 0 : pageStartIndex + 1;
+  const showingTo = Math.min(pageStartIndex + pageSize, totalListItems);
+
   const totalIncome = transactions
     .filter((t) => t.category?.categoryType === "revenue")
     .reduce((sum, t) => sum + Number(t.totalAmount), 0);
@@ -300,42 +331,128 @@ export function TransactionsManagement() {
         <TabsContent value="list" className="mt-3">
           <Card className="shadow-sm border-border/60">
             <CardHeader className="pb-3 pt-4 bg-muted/30">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-[12.5px] font-semibold text-foreground/90">All Transactions</CardTitle>
-                <Select
-                  value={selectedCompany?.toString() || "all"}
-                  onValueChange={(value) => setSelectedCompany(value === "all" ? undefined : parseInt(value))}
-                >
-                  <SelectTrigger className="w-[180px] h-7 text-[11.5px]">
-                    <SelectValue placeholder="Filter by company" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all" className="text-[12px]">
-                      All Companies
-                    </SelectItem>
-                    {companies.map((company) => (
-                      <SelectItem key={company.id} value={company.id.toString()} className="text-[12px]">
-                        {company.name}
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div>
+                  <CardTitle className="text-[12.5px] font-semibold text-foreground/90">All Transactions</CardTitle>
+                  {!transactionsLoading && (
+                    <p className="text-[10.5px] text-muted-foreground mt-0.5">
+                      {totalListItems} {totalListItems === 1 ? "transaction" : "transactions"}
+                      {recurringTransactions.length > 0 &&
+                        ` · ${recurringTransactions.length} recurring (see Recurring tab)`}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Select
+                    value={sortBy}
+                    onValueChange={(value) => {
+                      setSortBy(value as SortBy);
+                      setListPage(1);
+                    }}
+                  >
+                    <SelectTrigger className="w-[170px] h-7 text-[11.5px]">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="date" className="text-[12px]">
+                        Newest transaction date
                       </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                      <SelectItem value="entered" className="text-[12px]">
+                        Recently entered
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={selectedCompany?.toString() || "all"}
+                    onValueChange={(value) => {
+                      setSelectedCompany(value === "all" ? undefined : parseInt(value));
+                      setListPage(1);
+                    }}
+                  >
+                    <SelectTrigger className="w-[180px] h-7 text-[11.5px]">
+                      <SelectValue placeholder="Filter by company" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all" className="text-[12px]">
+                        All Companies
+                      </SelectItem>
+                      {companies.map((company) => (
+                        <SelectItem key={company.id} value={company.id.toString()} className="text-[12px]">
+                          {company.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="pb-4 pt-4">
               {transactionsLoading ? (
                 <TransactionListSkeleton />
               ) : (
-                <TransactionsTable
-                  transactions={
-                    selectedCompany
-                      ? regularTransactions.filter((t) => t.company.id === selectedCompany)
-                      : regularTransactions
-                  }
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                  isDeleting={deleteMutation.isPending}
-                />
+                <>
+                  <TransactionsTable
+                    transactions={pagedTransactions}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    isDeleting={deleteMutation.isPending}
+                  />
+
+                  {/* Pagination */}
+                  {totalListItems > 0 && (
+                    <div className="flex items-center justify-between gap-2 flex-wrap mt-3 pt-3 border-t border-border/60">
+                      <p className="text-[11px] text-muted-foreground">
+                        Showing {showingFrom}–{showingTo} of {totalListItems}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[11px] text-muted-foreground">Rows</span>
+                          <Select
+                            value={pageSize.toString()}
+                            onValueChange={(value) => {
+                              setPageSize(parseInt(value));
+                              setListPage(1);
+                            }}
+                          >
+                            <SelectTrigger className="w-[64px] h-7 text-[11.5px]">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {PAGE_SIZE_OPTIONS.map((size) => (
+                                <SelectItem key={size} value={size.toString()} className="text-[12px]">
+                                  {size}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 px-2 text-[11.5px]"
+                          onClick={() => setListPage(Math.max(1, currentListPage - 1))}
+                          disabled={currentListPage <= 1}
+                        >
+                          <ChevronLeft className="h-3 w-3 mr-0.5" />
+                          Prev
+                        </Button>
+                        <span className="text-[11px] text-muted-foreground tabular-nums">
+                          Page {currentListPage} of {totalListPages}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 px-2 text-[11.5px]"
+                          onClick={() => setListPage(Math.min(totalListPages, currentListPage + 1))}
+                          disabled={currentListPage >= totalListPages}
+                        >
+                          Next
+                          <ChevronRight className="h-3 w-3 ml-0.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </CardContent>
           </Card>
