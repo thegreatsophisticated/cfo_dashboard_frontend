@@ -24,7 +24,10 @@ import {
 } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format, parseISO, subDays } from "date-fns";
-import { useGlobalCashBook } from "@/hooks/use-global-reports";
+import {
+  useGlobalCashBook,
+  type CashBookStatementLine,
+} from "@/hooks/use-global-reports";
 
 function formatCurrency(amount: number): string {
   return `RWF ${amount.toLocaleString()}`;
@@ -94,17 +97,6 @@ function StatementRow({
   );
 }
 
-type StatementLine = {
-  id: number;
-  date: string;
-  description: string;
-  counterparty?: string | null;
-  referenceNumber?: string | null;
-  category?: string;
-  companyName?: string;
-  amount: number;
-};
-
 function SectionHeader({ title, count }: { title: string; count?: number }) {
   return (
     <div className="flex justify-between py-1.5 px-3 border-b border-border font-semibold text-[11px] text-primary bg-secondary mt-1">
@@ -122,7 +114,7 @@ function TransactionLines({
   lines,
   tone,
 }: {
-  lines: StatementLine[];
+  lines: CashBookStatementLine[];
   tone: "in" | "out";
 }) {
   if (lines.length === 0) {
@@ -194,7 +186,14 @@ function CashFlowAnalysis() {
     try {
       // Load the PDF library only when needed
       const { exportCashFlowPDF } = await import("@/lib/export-cashflow-pdf");
-      exportCashFlowPDF(startDate, endDate, data.summary, data.data);
+      exportCashFlowPDF(
+        startDate,
+        endDate,
+        data.summary,
+        data.data,
+        data.statement,
+      );
+
       toast.success("PDF exported successfully");
     } catch (err) {
       console.error("PDF export failed:", err);
@@ -247,11 +246,7 @@ function CashFlowAnalysis() {
     );
   }
 
-  const { summary, data: companies, meta } = data;
-  // Individual transactions (with dates) for the Cash In / Cash Out sections
-  const statement = data.statement as
-    | { cashIn: StatementLine[]; cashOut: StatementLine[] }
-    | undefined;
+  const { summary, data: companies, meta, statement } = data;
 
   // Period labels for the Consolidated Cash Flow Statement
   const periodStart = new Date(summary.period.startDate);
@@ -281,7 +276,11 @@ function CashFlowAnalysis() {
                   onOpenChange={setIsStartCalendarOpen}
                 >
                   <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-7 text-[11px] px-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-[11px] px-2"
+                    >
                       <Calendar className="h-3 w-3 mr-1" />
                       {format(startDate, "dd MMM yy")}
                     </Button>
@@ -307,7 +306,11 @@ function CashFlowAnalysis() {
                   onOpenChange={setIsEndCalendarOpen}
                 >
                   <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-7 text-[11px] px-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-[11px] px-2"
+                    >
                       <Calendar className="h-3 w-3 mr-1" />
                       {format(endDate, "dd MMM yy")}
                     </Button>
@@ -567,7 +570,9 @@ function CashFlowAnalysis() {
             <CardTitle className="text-xs font-semibold">
               Transaction Activity
             </CardTitle>
-            <p className="text-[10px] text-muted-foreground">Sorted by volume</p>
+            <p className="text-[10px] text-muted-foreground">
+              Sorted by volume
+            </p>
           </CardHeader>
           <CardContent className="pt-0 px-3 pb-3">
             <div className="space-y-1.5">
